@@ -89,7 +89,7 @@ namespace Simulator.Simulation
                 foreach (TmxObject obj in map.ObjectGroups[1].Objects)
                 {
                     RoadSign temp = new RoadSign() { Block = obj };
-                    temp.Rotation = 10;
+                    temp.Rotation = 90;
                     for (int i = 1; i < 10; i++)
                     {
                         for (int b = 1; b < 10; b++)
