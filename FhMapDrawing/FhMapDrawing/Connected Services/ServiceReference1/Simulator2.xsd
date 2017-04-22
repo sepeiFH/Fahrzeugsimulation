@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Simulator.Simulation.WCFInterfaces" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Simulator.Simulation.WCFInterfaces" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="ArrayOfBlockObjectContract">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="BlockObjectContract" nillable="true" type="tns:BlockObjectContract" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfBlockObjectContract" nillable="true" type="tns:ArrayOfBlockObjectContract" />
+  <xs:complexType name="BlockObjectContract">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="GID" type="xs:int" />
+      <xs:element minOccurs="0" name="Rotation" type="xs:double" />
+      <xs:element minOccurs="0" name="X" type="xs:double" />
+      <xs:element minOccurs="0" name="Y" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BlockObjectContract" nillable="true" type="tns:BlockObjectContract" />
+</xs:schema>

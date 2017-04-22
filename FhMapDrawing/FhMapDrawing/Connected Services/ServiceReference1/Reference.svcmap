@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="50688066-647d-4a4a-a270-7ed37e030ac2" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:1667/Simulator" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Simulator.xsd" MetadataType="Schema" ID="2fef5615-0e70-4eac-9d90-849f3d9a6832" SourceId="1" SourceUrl="http://localhost:1667/Simulator?xsd=xsd0" />
+    <MetadataFile FileName="Simulator1.xsd" MetadataType="Schema" ID="a7cbdb77-0ab3-4bd3-ac0f-2ab114f777bb" SourceId="1" SourceUrl="http://localhost:1667/Simulator?xsd=xsd1" />
+    <MetadataFile FileName="Simulator2.xsd" MetadataType="Schema" ID="e70801ff-ad2c-4492-bda8-744c0d46f614" SourceId="1" SourceUrl="http://localhost:1667/Simulator?xsd=xsd2" />
+    <MetadataFile FileName="Simulator.disco" MetadataType="Disco" ID="3380cc30-dede-4b12-8aa0-35be5ee1f4af" SourceId="1" SourceUrl="http://localhost:1667/Simulator?disco" />
+    <MetadataFile FileName="SimulatorService.wsdl" MetadataType="Wsdl" ID="cfcb6d4d-05a8-4148-a8ee-e99b921c31f6" SourceId="1" SourceUrl="http://localhost:1667/Simulator?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

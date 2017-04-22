@@ -1,0 +1,17 @@
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.exe
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.pdb
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\MonoGame.Framework.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.MediaFoundation.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.XAudio2.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.DXGI.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct3D11.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct2D1.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.XInput.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct3D9.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\MonoGame.Framework.xml
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.csprojResolveAssemblyReference.cache
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.exe
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.pdb
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\TiledSharp.dll
+c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.exe.config

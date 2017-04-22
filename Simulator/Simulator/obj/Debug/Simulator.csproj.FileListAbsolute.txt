@@ -1,0 +1,7 @@
+c:\users\admin\documents\visual studio 2017\Projects\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache
+c:\users\admin\documents\visual studio 2017\Projects\Simulator\Simulator\bin\Debug\Simulator.exe.config
+c:\users\admin\documents\visual studio 2017\Projects\Simulator\Simulator\bin\Debug\Simulator.exe
+c:\users\admin\documents\visual studio 2017\Projects\Simulator\Simulator\bin\Debug\Simulator.pdb
+c:\users\admin\documents\visual studio 2017\Projects\Simulator\Simulator\obj\Debug\Simulator.exe
+c:\users\admin\documents\visual studio 2017\Projects\Simulator\Simulator\obj\Debug\Simulator.pdb
+C:\Users\Admin\documents\visual studio 2017\Projects\Simulator\Simulator\bin\Debug\TiledSharp.dll
