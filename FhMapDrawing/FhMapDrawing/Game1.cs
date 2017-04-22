@@ -256,7 +256,7 @@ namespace FhMapDrawing
                     int x = (int)((item.X) * scale);
                     int y = (int)((item.Y) * scale);
 
-                    spriteBatch.Draw(tilesetVehicle, new Rectangle(x, y, (int)(tileWidthVehicle * scale), (int)(tileHeightVehicle * scale)), tilesetRec, Color.White, 0, Vector2.Zero, SpriteEffects.None, 1);
+                    spriteBatch.Draw(tilesetVehicle, new Rectangle(x, y, (int)(tileWidthVehicle * scale), (int)(tileHeightVehicle * scale)), tilesetRec, Color.White, rotate, new Vector2(tileWidthVehicle, tileHeightVehicle), SpriteEffects.None, 1);
                 }
             }
 

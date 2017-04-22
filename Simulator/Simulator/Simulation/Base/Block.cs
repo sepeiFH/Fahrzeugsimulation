@@ -225,9 +225,31 @@ namespace Simulator.Simulation.Base
 
         public override void update()
         {
-            X -= 5;
             if (X < -100)
                 X = 1400;
+            else if (X > 1400)
+                X = -100;
+
+            if (Y < -100)
+                Y = 1000;
+            if (Y > 1000)
+                Y = -100;
+
+            MoveVehicle(5);
+        }
+
+        //Clockwise Rotation: Left Startpoint 90° Top 180 Right 270 Down
+        public void MoveVehicle(double doublePixels)
+        {
+            double yy = Y + doublePixels;
+            double angle = (Rotation + 90) % 360;
+
+            double radiants = angle * (Math.PI / 180.0d);
+            double newX = (Math.Cos(radiants) * (double)(X - X) - Math.Sin(radiants) * (double)(yy - Y) + X);
+            double newY = (Math.Sin(radiants) * (double)(X - X) + Math.Cos(radiants) * (double)(yy - Y) + Y);
+
+            X = newX;
+            Y = newY;
         }
     }
 
