@@ -222,7 +222,7 @@ namespace Simulator.Simulation.Base
         }
 
         private Dictionary<VehicleList, int> vehicleLengths = new Dictionary<VehicleList, int>() { {VehicleList.LKW1, 60 }, { VehicleList.Car1, 32 } };
-
+        private int count;
         public override void update()
         {
             if (X < -100)
@@ -236,6 +236,12 @@ namespace Simulator.Simulation.Base
                 Y = -100;
 
             MoveVehicle(5);
+            if (count++ % 2 == 0)
+            {
+                this.Rotation += 0.25;
+                count = 2;
+            }
+                
         }
 
         //Clockwise Rotation: Left Startpoint 90° Top 180 Right 270 Down

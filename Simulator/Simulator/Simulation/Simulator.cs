@@ -96,7 +96,7 @@ namespace Simulator.Simulation
                 foreach (TmxObject obj in map.ObjectGroups[1].Objects)
                 {
                     RoadSign temp = new RoadSign() { Block = obj };
-                    temp.Rotation = 90;
+                    temp.Rotation = 10;
                     for (int i = 1; i < 10; i++)
                     {
                         for (int b = 1; b < 10; b++)
@@ -104,7 +104,7 @@ namespace Simulator.Simulation
                             Vehicle vehicle = new Vehicle() { GID = temp.GID, Rotation = temp.Rotation, X = temp.X + (b * 70), Y = temp.Y + (i * 20) };
                             allDynamicObjects.Add(vehicle);
                         }
-                    }*/
+                    }
                     return;
                 }
             }
