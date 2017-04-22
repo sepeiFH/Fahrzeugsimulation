@@ -50,6 +50,9 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+    <properties>
+	 <property name="spawnRatePerSec" type="double" value="1"/>
+	</properties>
  <objectgroup name="Verkehrszeichen">
   <object id="5" name="Ampel1" gid="12" x="576" y="102" width="32" height="32">
    <properties>

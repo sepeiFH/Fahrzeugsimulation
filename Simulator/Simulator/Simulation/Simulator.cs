@@ -15,6 +15,7 @@ namespace Simulator.Simulation
         public readonly int RefreshesPerSecond = 50;
         private readonly TimeSpan SimulatorSpeed;
         private Stopwatch stopWatch;
+        private double spawnRate;
 
         public TmxMap map;
         //public List<RoadSign> allRoadSigns;
@@ -77,6 +78,12 @@ namespace Simulator.Simulation
 
             if (map.ObjectGroups.Count > 0)
             {
+                /*foreach (TmxObject obj in map.ObjectGroups[0].Objects)
+                {
+                    PropertyDict props = obj.Properties;
+                    spawnRate = Double.Parse(props["spawnRatePerSec"]);
+                }*/
+
                 foreach (TmxObject obj in map.ObjectGroups[0].Objects)
                 {
                     RoadSign roadSign = new RoadSign() { Block = obj };
@@ -89,14 +96,16 @@ namespace Simulator.Simulation
                 foreach (TmxObject obj in map.ObjectGroups[1].Objects)
                 {
                     RoadSign temp = new RoadSign() { Block = obj };
-                    for (int i = 1; i < 10; i++)
+                    Vehicle vehicle = new Vehicle() { GID = temp.GID, Rotation = temp.Rotation, X = temp.X + (1 * 70), Y = temp.Y + (0 * 20) };
+                    allDynamicObjects.Add(vehicle);
+                    /*for (int i = 1; i < 10; i++)
                     {
                         for (int b = 1; b < 10; b++)
                         {
                             Vehicle vehicle = new Vehicle() { GID = temp.GID, Rotation = temp.Rotation, X = temp.X + (b * 70), Y = temp.Y + (i * 20) };
                             allDynamicObjects.Add(vehicle);
                         }
-                    }
+                    }*/
                     return;
                 }
             }
