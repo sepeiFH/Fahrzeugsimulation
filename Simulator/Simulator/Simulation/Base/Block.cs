@@ -124,7 +124,8 @@ namespace Simulator.Simulation.Base
         {
             Red = 12,
             Yellow = 13,
-            Green = 14
+            Green = 14,
+            YellowRed = 15
         }
 
         public TmxObject Block
@@ -155,12 +156,12 @@ namespace Simulator.Simulation.Base
             //Console.WriteLine("Ampel State Changed");
             if (Status == LightStatus.Red)
             {
-                Status = LightStatus.Yellow;
+                Status = LightStatus.YellowRed;
                 base.Block = Block;
                 return;
             }
 
-            if(Status == LightStatus.Yellow)
+            if (Status == LightStatus.YellowRed)
             {
                 Status = LightStatus.Green;
                 base.Block = Block;
@@ -168,6 +169,13 @@ namespace Simulator.Simulation.Base
             }
 
             if (Status == LightStatus.Green)
+            {
+                Status = LightStatus.Yellow;
+                base.Block = Block;
+                return;
+            }
+
+            if (Status == LightStatus.Yellow)
             {
                 Status = LightStatus.Red;
                 base.Block = Block;
@@ -182,10 +190,11 @@ namespace Simulator.Simulation.Base
                 currentTick = startOffset;
 
             if (currentTick == redPhaseTicks || currentTick == redPhaseTicks + yellowPhaseTicks ||
-                currentTick == redPhaseTicks + yellowPhaseTicks + greenPhaseTicks)
+                currentTick == redPhaseTicks + yellowPhaseTicks + greenPhaseTicks ||
+                currentTick == redPhaseTicks + 2*yellowPhaseTicks + greenPhaseTicks)
                 changeState();
 
-            if (currentTick++ > redPhaseTicks + yellowPhaseTicks + greenPhaseTicks)
+            if (currentTick++ > redPhaseTicks +2*yellowPhaseTicks + greenPhaseTicks)
                 currentTick = 0;
 
             /*if (stopWatch == null)
