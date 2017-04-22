@@ -15,3 +15,20 @@ c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\o
 c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.pdb
 c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\TiledSharp.dll
 c:\users\admin\documents\visual studio 2017\Projects\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.exe.config
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.exe.config
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.exe
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\FhMapDrawing.pdb
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\MonoGame.Framework.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\TiledSharp.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.MediaFoundation.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.XAudio2.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.DXGI.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct3D11.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct2D1.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.XInput.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct3D9.dll
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\MonoGame.Framework.xml
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.csprojResolveAssemblyReference.cache
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.exe
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.pdb
