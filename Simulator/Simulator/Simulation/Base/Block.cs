@@ -226,8 +226,8 @@ namespace Simulator.Simulation.Base
         public override void update()
         {
             if (X < -100)
-                X = 1400;
-            else if (X > 1400)
+                X = 2000;
+            else if (X > 2000)
                 X = -100;
 
             if (Y < -100)

@@ -84,28 +84,35 @@ namespace Simulator.Simulation
                     spawnRate = Double.Parse(props["spawnRatePerSec"]);
                 }*/
 
-                foreach (TmxObject obj in map.ObjectGroups[0].Objects)
+                foreach (var group in map.ObjectGroups)
                 {
-                    RoadSign roadSign = new RoadSign() { Block = obj };
-                    if (obj.Tile.Gid == TrafficLight.RedGID)
-                        roadSign = new TrafficLight() { Block = obj };
-                    //allRoadSigns.Add(roadSign);
-                    allDynamicObjects.Add(roadSign);
-                }
-
-                foreach (TmxObject obj in map.ObjectGroups[1].Objects)
-                {
-                    RoadSign temp = new RoadSign() { Block = obj };
-                    temp.Rotation = 10;
-                    for (int i = 1; i < 10; i++)
+                    if (group.Name == "Vehicles")
                     {
-                        for (int b = 1; b < 10; b++)
+                        foreach (TmxObject obj in group.Objects)
                         {
-                            Vehicle vehicle = new Vehicle() { GID = temp.GID, Rotation = temp.Rotation, X = temp.X + (b * 70), Y = temp.Y + (i * 20) };
-                            allDynamicObjects.Add(vehicle);
+                            RoadSign temp = new RoadSign() { Block = obj };
+                            temp.Rotation = 10;
+                            for (int i = 1; i < 10; i++)
+                            {
+                                for (int b = 1; b < 10; b++)
+                                {
+                                    Vehicle vehicle = new Vehicle() { GID = temp.GID, Rotation = temp.Rotation, X = temp.X + (b * 70), Y = temp.Y + (i * 20) };
+                                    allDynamicObjects.Add(vehicle);
+                                }
+                            }
+                            return;
+                        }
+                    }else if (group.Name == "Verkehrszeichen")
+                    {
+                        foreach (TmxObject obj in group.Objects)
+                        {
+                            RoadSign roadSign = new RoadSign() { Block = obj };
+                            if (obj.Tile.Gid == TrafficLight.RedGID)
+                                roadSign = new TrafficLight() { Block = obj };
+                            //allRoadSigns.Add(roadSign);
+                            allDynamicObjects.Add(roadSign);
                         }
                     }
-                    return;
                 }
             }
         }

@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using FhMapDrawing.Helper;
 using FhMapDrawing.ServiceReference1;
 using TiledSharp;
 
@@ -15,22 +17,9 @@ namespace FhMapDrawing
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
         TmxMap map;
-        Texture2D tileset;
-
-        int tileWidth;
-        int tileHeight;
-        int tilesetTilesWide;
-        int tilesetTilesHigh;
-
         float scale = 1;
-
-        Texture2D tilesetVehicle;
-        int tileWidthVehicle;
-        int tileHeightVehicle;
-        int tilesetTilesWideVehicle;
-
+        private List<TilesInfo> tiles;
         private ServiceReference1.SimulatorServiceMapClient clientSimulator;
 
         public Game1()
@@ -54,8 +43,8 @@ namespace FhMapDrawing
             graphics.IsFullScreen = true;
             graphics.ApplyChanges();*/
 
-            graphics.PreferredBackBufferWidth = 1100; 
-            graphics.PreferredBackBufferHeight = 500;  
+            graphics.PreferredBackBufferWidth = 1920; 
+            graphics.PreferredBackBufferHeight = 800;  
             graphics.ApplyChanges();
 
             base.Initialize();
@@ -75,6 +64,17 @@ namespace FhMapDrawing
             //map = new TmxMap("Content/FH2.tmx");
             map = new TmxMap(clientSimulator.GetMap(), true);
 
+            tiles = new List<TilesInfo>(map.Tilesets.Count);
+
+            foreach(var tile in map.Tilesets)
+            {
+                FileStream fileStream = new FileStream("Content/" + tile.Image.Source.ToString(), FileMode.Open);
+                Texture2D tileset = Texture2D.FromStream(GraphicsDevice, fileStream);
+                fileStream.Dispose();
+                tiles.Add(new TilesInfo() { Tileset = tileset, TileWidth = tile.TileWidth, TileHeight = tile.TileHeight, TilesetTilesWide = tileset.Width / tile.TileWidth, TilesetTilesHigh = tileset.Height / tile.TileHeight, Name = tile.Image.Source });
+            }
+
+            /*
             //Map
             FileStream fileStream = new FileStream("Content/" + map.Tilesets[0].Image.Source.ToString(), FileMode.Open);
             tileset = Texture2D.FromStream(GraphicsDevice, fileStream);
@@ -97,6 +97,7 @@ namespace FhMapDrawing
             tileHeightVehicle = map.Tilesets[1].TileHeight;
 
             tilesetTilesWideVehicle = tilesetVehicle.Width / tileWidthVehicle;
+            */
 
             //calculate scale
             //scale = (float)Decimal.Round((decimal)graphics.PreferredBackBufferWidth / (map.Width * tileWidth), 1);
@@ -183,14 +184,15 @@ namespace FhMapDrawing
                     }
                     else
                     {
+                        TilesInfo temp = tiles.Find(z => z.Name.Contains("2104"));
                         int tileFrame = gid - 1;
-                        int column = tileFrame % tilesetTilesWide;
-                        int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
+                        int column = tileFrame % temp.TilesetTilesWide;
+                        int row = (int)Math.Floor((double)tileFrame / (double)temp.TilesetTilesWide);
 
                         float x = (i % map.Width) * map.TileWidth;
                         float y = (float)Math.Floor(i / (double)map.Width) * map.TileHeight;
 
-                        Rectangle tilesetRec = new Rectangle(tileWidth * column, tileHeight * row, tileWidth, tileHeight);
+                        Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
 
                         float rotation = 0.0f;
 
@@ -202,18 +204,41 @@ namespace FhMapDrawing
 
                         //spriteBatch.Draw(tileset, new Rectangle((int)x, (int)y, tileWidth, tileHeight), tilesetRec, Color.White, 0f, Vector2.Zero, SpriteEffects.None, layer);
                         //spriteBatch.Draw(tileset, new Rectangle((int) (x * scale), (int) (y*scale), tileWidth, tileHeight), tilesetRec, Color.White, 0f, Vector2.Zero, SpriteEffects.None, layer);
-                        spriteBatch.Draw(tileset, new Rectangle((int)(x * scale), (int)(y * scale), (int)(tileWidth * scale), (int)(tileHeight * scale)), tilesetRec, Color.White, rotation, Vector2.Zero, SpriteEffects.None, layer);
+                        spriteBatch.Draw(temp.Tileset, new Rectangle((int)(x * scale), (int)(y * scale), (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotation, Vector2.Zero, SpriteEffects.None, layer);
                     }
                 }
 
+            //Houses etc
+            foreach(var item in map.ObjectGroups)
+            {
+                if(item.Name.Contains("Umgebung"))
+                {
+                    foreach(var obj in item.Objects)
+                    {
+                        TilesInfo temp = tiles.Find(z => z.Name.Contains("Umgebung"));
+                        int tileFrame = obj.Tile.Gid - 162;
+                        int column = tileFrame % temp.TileWidth;
+                        int row = (int)Math.Floor((double)tileFrame / (double)temp.TileWidth);
+                        float rotate = (float)(obj.Rotation / 180 * Math.PI);
+
+                        Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
+
+                        int x = (int)((obj.X) * scale) + temp.TileWidth / 2;
+                        int y = (int)((obj.Y) * scale) - temp.TileHeight / 2;
+
+                        spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth / 2, temp.TileHeight / 2), SpriteEffects.None, 1);
+                    }
+                }
+            }
             var items = clientSimulator.GetDynamicObjects();
             foreach (BlockObjectContract item in items)
             {
                 if (item.GID < 100)
                 {
+                    TilesInfo temp = tiles.Find(z => z.Name.Contains("2104"));
                     int tileFrame = item.GID - 1;
-                    int column = tileFrame % tilesetTilesWide;
-                    int row = (int)Math.Floor((double)tileFrame / (double)tilesetTilesWide);
+                    int column = tileFrame % temp.TilesetTilesWide;
+                    int row = (int)Math.Floor((double)tileFrame / (double)temp.TilesetTilesWide);
                     float rotate = (float) (item.Rotation / 180 * Math.PI);
 
                     int dynX = 0, dynY = 0;
@@ -241,22 +266,24 @@ namespace FhMapDrawing
                     int x = (int)((item.X - dynX) * scale);
                     int y = (int)((item.Y - dynY) * scale);
 
-                    Rectangle tilesetRec = new Rectangle(tileWidth * column, tileHeight * row, tileWidth, tileHeight);
+                    Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
 
-                    spriteBatch.Draw(tileset, new Rectangle(x, y, (int)(tileWidth * scale), (int)(tileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(16, 16), SpriteEffects.None, 1);
-                }else if (item.GID > 999)
-                {
+                    spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(16, 16), SpriteEffects.None, 1);
+                } else if(item.GID > 100 && item.GID < 200){
+
+                }else if (item.GID > 999) {
+                    TilesInfo temp = tiles.Find(z => z.Name.Contains("TileCars"));
                     int tileFrame = item.GID - 1000;
-                    int column = tileFrame % tileWidthVehicle;
-                    int row = (int)Math.Floor((double)tileFrame / (double)tileWidthVehicle);
+                    int column = tileFrame % temp.TileWidth;
+                    int row = (int)Math.Floor((double)tileFrame / (double)temp.TileWidth);
                     float rotate = (float)(item.Rotation / 180 * Math.PI);
 
-                    Rectangle tilesetRec = new Rectangle(tileWidthVehicle * column, tileHeightVehicle * row, tileWidthVehicle, tileHeightVehicle);
+                    Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
 
                     int x = (int)((item.X) * scale);
                     int y = (int)((item.Y) * scale);
 
-                    spriteBatch.Draw(tilesetVehicle, new Rectangle(x, y, (int)(tileWidthVehicle * scale), (int)(tileHeightVehicle * scale)), tilesetRec, Color.White, rotate, new Vector2(tileWidthVehicle, tileHeightVehicle), SpriteEffects.None, 1);
+                    spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth, temp.TileHeight), SpriteEffects.None, 1);
                 }
             }
 
