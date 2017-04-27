@@ -18,7 +18,13 @@ namespace Traffic_control.Trafficcontrol
         private int durationgrp4 = 5000;
         private int delay = 3000; // time between changes of the several groups
         private int counter = 0;
-        private string state = "1";
+        private int state;
+
+        /* Mögliche Vorgehensweise:
+         * 1) IDs der Ampelblöcke rot, gelbrot, grün, gelb in dieser Reihenfolge über Interface von Simulation einlesen
+         * 2) je nachdem welche ID zu welcher Ampel steht, die States bzw. Abfolge dazu definieren
+         * 3) Methode mit Timer wird hier sein
+         */
 
         //Constructor
         public TrafficLightGroups()
@@ -52,7 +58,7 @@ namespace Traffic_control.Trafficcontrol
             set { durationgrp4 = value; }
         }
 
-        public string State
+        public int State
         {
             get { return state; }
         }
@@ -75,9 +81,9 @@ namespace Traffic_control.Trafficcontrol
         }
 
         // set light of a traffic light group
-        public void setLight(List<TrafficLight> tlgroup, bool isGreenState)
+        public void setLight(List<TrafficLight> tlgroup, int isGreenState)
         {
-            foreach(TrafficLight trlight in tlgroup)
+            foreach (TrafficLight trlight in tlgroup)
             {
                 trlight.IsGreen = isGreenState;
             }
@@ -91,7 +97,7 @@ namespace Traffic_control.Trafficcontrol
         {
             //On every 1 sec
             counter += 1000;
-            if (state == "1")
+            if (state == 1)
             {
                 if (counter == durationgrp1)
                 {
@@ -106,7 +112,7 @@ namespace Traffic_control.Trafficcontrol
                     return true;
                 }
             }
-            else if (state == "2")
+            else if (state == 2)
             {
                 if (counter == durationgrp2)
                 {
@@ -121,7 +127,7 @@ namespace Traffic_control.Trafficcontrol
                     return true;
                 }
             }
-            else if (state == "3")
+            else if (state == 3)
             {
                 if (counter == durationgrp3)
                 {
@@ -136,7 +142,7 @@ namespace Traffic_control.Trafficcontrol
                     return true;
                 }
             }
-            else if (state == "4")
+            else if (state == 4)
             {
                 if (counter == durationgrp4)
                 {
@@ -159,21 +165,21 @@ namespace Traffic_control.Trafficcontrol
         /// </summary>
         public void ChangePhaseRed()
         {
-            if (state == "1")
+            if (state == 1)
             {
-                this.setLight(GetGroup1(), false);
+                this.setLight(GetGroup1(), state);
             }
-            else if (state == "2")
+            else if (state == 2)
             {
-                this.setLight(GetGroup2(), false);
+                this.setLight(GetGroup2(), state);
             }
-            else if (state == "3")
+            else if (state == 3)
             {
-                this.setLight(GetGroup3(), false);
+                this.setLight(GetGroup3(), state);
             }
-            else if (state == "4")
+            else if (state == 4)
             {
-                this.setLight(GetGroup4(), false);
+                this.setLight(GetGroup4(), state);
             }
         }
 
@@ -183,34 +189,34 @@ namespace Traffic_control.Trafficcontrol
         public void ChangePhaseGreen()
         {
             counter = 0;
-            if (state == "1")
+            if (state == 1)
             {
-                state = "2";
-                this.setLight(GetGroup2(), true);
+                state = 2;
+                this.setLight(GetGroup2(), state);
             }
-            else if (state == "2")
+            else if (state == 2)
             {
-                state = "3";
-                this.setLight(GetGroup3(), true);
+                state = 3;
+                this.setLight(GetGroup3(), state);
 
             }
-            else if (state == "3")
+            else if (state == 3)
             {
                 if (group4.Count == 0)
                 {
-                    state = "1";
-                    this.setLight(GetGroup1(), true);
+                    state = 1;
+                    this.setLight(GetGroup1(), state);
                 }
                 else
                 {
-                    state = "4";
-                    this.setLight(GetGroup4(), true);
+                    state = 4;
+                    this.setLight(GetGroup4(), state);
                 }
             }
-            else if (state == "4")
+            else if (state == 4)
             {
-                state = "1";
-                this.setLight(GetGroup1(), true);
+                state = 1;
+                this.setLight(GetGroup1(), state);
             }
         }
 

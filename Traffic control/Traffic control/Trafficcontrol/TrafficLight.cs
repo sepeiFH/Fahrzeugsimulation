@@ -29,15 +29,15 @@ namespace Traffic_control.Trafficcontrol
             set { duration = value; }
         }
 
-        public bool IsGreen
+        public int IsGreen
         {
-            get { return isGreen; }
-            set { isGreen = value; }
+            get { return state; }
+            set { state = value; }
         }
-        public bool IsYellow
+        public int IsYellow
         {
-            get { return isYellow; }
-            set { isYellow = value; }
+            get { return state; }
+            set { state = value; }
         }
 
       /*  public int getState()
