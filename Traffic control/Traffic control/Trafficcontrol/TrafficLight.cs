@@ -12,15 +12,17 @@ namespace Traffic_control.Trafficcontrol
         private int duration;
         private int id;
         private int state; // 1 = green, 2 = yellow, 3 = red
-        private bool isGreen;
-        private bool isYellow;
+        private int isGreen;
+        private int isYellow;
+        private int isRed;
 
 
         public TrafficLight()
         {
             this.duration = 5;
-            this.isGreen = false;
-            this.isYellow = false;
+            this.isGreen = 1;
+            this.isYellow = 2;
+            this.isRed = 3;
         }
 
         public int Duration
@@ -31,24 +33,30 @@ namespace Traffic_control.Trafficcontrol
 
         public int IsGreen
         {
-            get { return state; }
-            set { state = value; }
+            get { return isGreen; }
+            set { isGreen = value; }
         }
         public int IsYellow
         {
-            get { return state; }
-            set { state = value; }
+            get { return isYellow; }
+            set { isYellow = value; }
         }
 
-      /*  public int getState()
+        public int IsRed
         {
-            return state;
+            get { return isRed; }
+            set { isRed = value; }
         }
 
-        public int setState(int s)
-        {
-            return state = s;
-        }
-        */
+        /*  public int getState()
+          {
+              return state;
+          }
+
+          public int setState(int s)
+          {
+              return state = s;
+          }
+          */
     }
 }

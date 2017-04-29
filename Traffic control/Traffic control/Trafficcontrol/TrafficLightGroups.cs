@@ -8,23 +8,20 @@ namespace Traffic_control.Trafficcontrol
 {
     class TrafficLightGroups
     {
+        // group1 to group4 are the opposite traffic lights in a crossing
+        // number of groups depends on the kind of the crossing (4 in/out, 3 in/out)
         private List<TrafficLight> group1;
         private List<TrafficLight> group2;
         private List<TrafficLight> group3;
         private List<TrafficLight> group4;
+        // the duration of a traffic light group (states green, yellow and red)
         private int durationgrp1 = 5000;
         private int durationgrp2 = 5000;
         private int durationgrp3 = 5000;
         private int durationgrp4 = 5000;
         private int delay = 3000; // time between changes of the several groups
         private int counter = 0;
-        private int state;
-
-        /* Mögliche Vorgehensweise:
-         * 1) IDs der Ampelblöcke rot, gelbrot, grün, gelb in dieser Reihenfolge über Interface von Simulation einlesen
-         * 2) je nachdem welche ID zu welcher Ampel steht, die States bzw. Abfolge dazu definieren
-         * 3) Methode mit Timer wird hier sein
-         */
+        private int state; // state: green, yellow, red
 
         //Constructor
         public TrafficLightGroups()
@@ -218,6 +215,26 @@ namespace Traffic_control.Trafficcontrol
                 state = 1;
                 this.setLight(GetGroup1(), state);
             }
+        }
+
+        public void AddToGroup1(TrafficLight tl)
+        {
+            group1.Add(tl);
+        }
+
+        public void AddToGroup2(TrafficLight tl)
+        {
+            group2.Add(tl);
+        }
+
+        public void AddToGroup3(TrafficLight tl)
+        {
+            group3.Add(tl);
+        }
+
+        public void AddToGroup4(TrafficLight tl)
+        {
+            group4.Add(tl);
         }
 
     }
