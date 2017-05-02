@@ -72,6 +72,7 @@
     <property name="Group" type="int" value="1"/>
    </properties>
   </object>
+   <!--
   <object id="6" name="Ampel2" gid="12" x="701" y="26" width="32" height="32" rotation="180">
    <properties>
     <property name="Group" type="int" value="1"/>
@@ -157,6 +158,7 @@
     <property name="Group" type="int" value="6"/>
    </properties>
   </object>
+  -->
  </objectgroup>
  <objectgroup name="Vehicles">
   <object id="9" gid="1000" x="705" y="66" width="64" height="32"/>

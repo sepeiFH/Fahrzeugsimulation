@@ -22,6 +22,8 @@ namespace Traffic_control.Trafficcontrol
         private CancellationTokenSource token;
         private List<TrafficLight> trafficLights;
 
+        private ServiceReference1.SimulatorServiceTrafficControlClient clientSimulator;
+
         #endregion Fields
 
         #region Constructor
@@ -66,6 +68,8 @@ namespace Traffic_control.Trafficcontrol
         {
             stopWatch = new Stopwatch();
             stopWatch.Start();
+
+            clientSimulator = new ServiceReference1.SimulatorServiceTrafficControlClient();
             while (true)
             {
                 if (stopWatch.Elapsed > TrafficAgentSpeed)
@@ -81,7 +85,8 @@ namespace Traffic_control.Trafficcontrol
 
                         foreach (TrafficLightGroup item in group)
                         {
-                            if (item.TrafficLightCount == 4)
+                            //if (item.TrafficLightCount == 4)
+                            if (item.ID >= 1 && item.ID <= 4)
                             {
                                 if (item.Left.Duration < 0)
                                 {
@@ -110,8 +115,32 @@ namespace Traffic_control.Trafficcontrol
 
         }
 
+        private TrafficLight.LightStatus convertLightStatus(ServiceReference1.TrafficLightStatus status)
+        {
+            TrafficLight.LightStatus newStatus;
+
+            if (status == ServiceReference1.TrafficLightStatus.Green)
+                newStatus = TrafficLight.LightStatus.Green;
+            else if (status == ServiceReference1.TrafficLightStatus.Red)
+                newStatus = TrafficLight.LightStatus.Red;
+            else if (status == ServiceReference1.TrafficLightStatus.Yellow)
+                newStatus = TrafficLight.LightStatus.Yellow;
+            else
+                newStatus = TrafficLight.LightStatus.YellowRed;
+
+            return newStatus;
+        }
+
         public void GetTrafficLightData()
         {
+            var groups = clientSimulator.GetTrafficLightGroups();
+            trafficLights = new List<TrafficLight>();
+            foreach (var group in groups)
+            {
+                foreach(var light in group.TrafficLights)
+                    trafficLights.Add(new TrafficLight(convertLightStatus(light.Status), group.ID, light.ID, new Point((int)light.PosX, (int)light.PosY)));
+            }
+            /*
             trafficLights = new List<TrafficLight>()
             {
                 new TrafficLight(TrafficLight.LightStatus.Red, 1, 1, new Point(0, 16)),
@@ -121,7 +150,7 @@ namespace Traffic_control.Trafficcontrol
                 new TrafficLight(TrafficLight.LightStatus.Red, 2, 5, new Point(-1, -1)),
                 //new TrafficLight(TrafficLight.LightStatus.Red, 2, 6),
                 //new TrafficLight(TrafficLight.LightStatus.Red, 2, 7)
-            };
+            };*/
         }
 
         #endregion Agent Ticks
@@ -157,6 +186,8 @@ namespace Traffic_control.Trafficcontrol
             private int redPhaseTicks = 100;
             private int yellowPhaseTicks = 40;
             private int greenPhaseTicks = 150;
+
+            #endregion
 
             public int TickCount
             {
@@ -210,9 +241,6 @@ namespace Traffic_control.Trafficcontrol
                 if (currentTick++ > Duration)
                     currentTick = 0;
             }
-
-
-            #endregion
         }
 
         #endregion TrafficLight

@@ -9,6 +9,7 @@ namespace Simulator.Simulation.Base
 {
     public class RoadSign : BlockObject
     {
+        public int ID { get; set; }
         public int RoadSignGroup
         {
             get
