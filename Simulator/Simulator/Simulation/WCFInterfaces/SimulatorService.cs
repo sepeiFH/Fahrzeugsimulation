@@ -52,11 +52,14 @@ namespace Simulator.Simulation.WCFInterfaces
         public static List<BlockObjectContract> GetDynamicObjects(Simulator simu)
         {
             List<BlockObjectContract> tempContracts = new List<BlockObjectContract>();
-            foreach (DynamicBlock obj in simu.allDynamicObjects)
+            try
             {
-                //if (obj is Vehicle)
-                tempContracts.Add(new BlockObjectContract() { GID = obj.GID, Rotation = obj.Rotation, X = obj.X, Y = obj.Y });
-            }
+                foreach (DynamicBlock obj in simu.allDynamicObjects)
+                {
+                    //if (obj is Vehicle)
+                    tempContracts.Add(new BlockObjectContract() { GID = obj.GID, Rotation = obj.Rotation, X = obj.X, Y = obj.Y });
+                }
+            } catch (Exception e) { }
 
             return tempContracts;
         }

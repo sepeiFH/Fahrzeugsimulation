@@ -32,7 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SimpleConfig, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\simple-config.1.4.0\lib\net40\SimpleConfig.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -49,6 +54,11 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulation\Base\DynamicBlock.cs" />
+    <Compile Include="Simulation\Base\RoadSign.cs" />
+    <Compile Include="Simulation\Base\StreetBlock.cs" />
+    <Compile Include="Simulation\Base\Vehicle.cs" />
+    <Compile Include="Simulation\Utilities\SimulationConfig.cs" />
     <Compile Include="Simulation\Base\Block.cs" />
     <Compile Include="Simulation\BlockMapping.cs" />
     <Compile Include="Simulation\Simulator.cs" />
@@ -57,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

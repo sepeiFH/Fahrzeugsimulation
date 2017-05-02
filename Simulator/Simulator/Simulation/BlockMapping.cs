@@ -76,7 +76,7 @@ namespace Simulator.Simulation
         {
             GID = 5;
             Type = BlockType.StaticBlock;
-            Direction = StreetDirection.TopToDown;
+            Direction = StreetDirection.TopToBottom;
         }
     }
 
@@ -87,7 +87,7 @@ namespace Simulator.Simulation
         {
             GID = 6;
             Type = BlockType.StaticBlock;
-            Direction = StreetDirection.DownToTop;
+            Direction = StreetDirection.BottomToTop;
         }
     }
 

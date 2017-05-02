@@ -12,3 +12,11 @@ C:\Users\Admin\Source\Repos\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Til
 C:\Users\Admin\Source\Repos\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache
 C:\Users\Admin\Source\Repos\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.exe
 C:\Users\Admin\Source\Repos\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.pdb
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Simulator.exe.config
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.exe
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.pdb
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Simulator.exe
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Simulator.pdb
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\TiledSharp.dll
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\SimpleConfig.dll

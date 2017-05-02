@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<Fahrzeug>
+		<Auto>
+			<spawnrate value="2" />
+		</Auto>
+		<LKW>
+			<spawnrate value="1" />
+		</LKW>
+	</Fahrzeug>
+</settings>

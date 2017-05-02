@@ -7,16 +7,20 @@ using System.ServiceModel.Description;
 using System.IO;
 using Simulator.Simulation;
 using Simulator.Simulation.Base;
+using Simulator.Simulation.Utilities;
 using Simulator.Simulation.WCFInterfaces;
 using TiledSharp;
+using SimpleConfig;
+using System.Configuration;
 
 namespace Simulator
 {
     class Program
     {
+        public static SimulationConfig settings = (dynamic)ConfigurationManager.GetSection("simulationConfig");
         static void Main(string[] args)
         {
-            Uri baseAddress = new Uri("http://localhost:1667/Simulator");
+            Uri baseAddress = new Uri(settings.BaseUrl);
 
             Simulation.Simulator simu = new Simulation.Simulator();
             simu.init();
