@@ -14,7 +14,13 @@ namespace Simulator.Simulation.Utilities
 
     class SimulationConfig
     {
+        public int Takt { get; set; }
         public String BaseUrl { get; set; }
         public List<Fahrzeug> Fahrzeuge { get; set; }
+    }
+
+    class CrossingConfig
+    {
+        public int Takt { get; set; }
     }
 }

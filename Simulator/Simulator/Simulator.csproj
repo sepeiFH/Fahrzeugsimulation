@@ -58,7 +58,7 @@
     <Compile Include="Simulation\Base\RoadSign.cs" />
     <Compile Include="Simulation\Base\StreetBlock.cs" />
     <Compile Include="Simulation\Base\Vehicle.cs" />
-    <Compile Include="Simulation\Utilities\SimulationConfig.cs" />
+    <Compile Include="Simulation\Utilities\Config.cs" />
     <Compile Include="Simulation\Base\Block.cs" />
     <Compile Include="Simulation\BlockMapping.cs" />
     <Compile Include="Simulation\Simulator.cs" />
