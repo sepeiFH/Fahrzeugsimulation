@@ -201,11 +201,10 @@ namespace Traffic_control.Trafficcontrol
                                 }
                                 item.UpdateTrafficLights();
                             }*/
-                                if (stateChanged)
-                                {
-                                    SetUpdatedTrafficLightData();
-                                    stateChanged = false;
-                                }
+                            if (stateChanged)
+                            {
+                                SetUpdatedTrafficLightData();
+                                stateChanged = false;
                             }
                         }
                     }
