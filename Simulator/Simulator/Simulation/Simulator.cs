@@ -20,6 +20,7 @@ namespace Simulator.Simulation
         private List<Coordiantes> spawningPoints;
         private List<Vehicle> vehicleList;
         public List<TrafficLight> roadSignList;
+        public static bool EmergencyModeActive { get; set; }
         Random rand = new Random();
         private int idCount = 0;
         public TmxMap map;
@@ -83,7 +84,7 @@ namespace Simulator.Simulation
 
         private void spawnVehicle()
         {
-            int num = rand.Next(1,100);
+            int num = rand.Next(1,100);/*
             int spawnrate = Program.settings.Fahrzeuge[0].SpawnRate;
             if (num <= spawnrate)
                 setVehicle(Program.settings.Fahrzeuge[0].GID);
@@ -95,6 +96,7 @@ namespace Simulator.Simulation
                 setVehicle(Program.settings.Fahrzeuge[3].GID);
             else if (num <= (spawnrate += Program.settings.Fahrzeuge[4].SpawnRate))
                 setVehicle(Program.settings.Fahrzeuge[4].GID);
+                */
             //else if (num < Program.settings.Fahrzeuge[0].SpawnRate + Program.settings.Fahrzeuge[1].SpawnRate)
             //setVehicle(1002);
         }
@@ -115,6 +117,7 @@ namespace Simulator.Simulation
             allDynamicObjects = new List<DynamicBlock>();
             roadSignList = new List<TrafficLight>();
             vehicleList = new List<Vehicle>();
+            EmergencyModeActive = true;
             //allRoadSigns = new List<RoadSign>();
             //allVehicles = new List<Vehicle>();
 

@@ -47,7 +47,8 @@ namespace Simulator.Simulation.Base
             Red = 12,
             Yellow = 13,
             Green = 14,
-            YellowRed = 15
+            YellowRed = 15,
+            Off = 16
         }
 
         public TmxObject Block
@@ -78,28 +79,19 @@ namespace Simulator.Simulation.Base
             //Console.WriteLine("Ampel State Changed");
             if (Status == LightStatus.Red)
             {
-                Status = LightStatus.YellowRed;
+                Status = LightStatus.Yellow;
                 base.Block = Block;
                 return;
             }
-
-            if (Status == LightStatus.YellowRed)
-            {
-                Status = LightStatus.Green;
-                base.Block = Block;
-                return;
-            }
-
-            if (Status == LightStatus.Green)
+            if (Status == LightStatus.Off)
             {
                 Status = LightStatus.Yellow;
                 base.Block = Block;
                 return;
             }
-
             if (Status == LightStatus.Yellow)
             {
-                Status = LightStatus.Red;
+                Status = LightStatus.Off;
                 base.Block = Block;
                 return;
             }
@@ -108,18 +100,19 @@ namespace Simulator.Simulation.Base
         private int currentTick = -1;
         public override void update()
         {
-            /*
-            if (currentTick < 0)
-                currentTick = startOffset;
+            if (Simulator.EmergencyModeActive)
+            {
+                if (currentTick < 0)
+                    currentTick = startOffset;
 
-            if (currentTick == redPhaseTicks || currentTick == redPhaseTicks + yellowPhaseTicks ||
-                currentTick == redPhaseTicks + yellowPhaseTicks + greenPhaseTicks ||
-                currentTick == redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
-                changeState();
+                if (currentTick == redPhaseTicks || currentTick == redPhaseTicks + yellowPhaseTicks ||
+                    currentTick == redPhaseTicks + yellowPhaseTicks + greenPhaseTicks ||
+                    currentTick == redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
+                    changeState();
 
-            if (currentTick++ > redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
-                currentTick = 0;
-                */
+                if (currentTick++ > redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
+                    currentTick = 0;
+            }
             /*if (stopWatch == null)
             {
                 stopWatch = new StopWatchWithOffset(TimeSpan.FromTicks(TimeSpan.TicksPerSecond * startOffsetSecond));

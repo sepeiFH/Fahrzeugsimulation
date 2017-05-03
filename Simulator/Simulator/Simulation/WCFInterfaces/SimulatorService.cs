@@ -108,7 +108,11 @@ namespace Simulator.Simulation.WCFInterfaces
                 foreach (TrafficLight roadSign in simu.roadSignList)
                 {
                     TrafficLightGroupContract tempGroup = tempGroupList.Find(X => X.ID.Equals(roadSign.RoadSignGroup));
-                    TrafficLightContract tempLight = new TrafficLightContract() { Status = convertStatus(roadSign.Status), Direction = convertDirection(roadSign.Rotation),ID=roadSign.ID, PosX=roadSign.X, PosY=roadSign.Y};
+                    TrafficLightContract tempLight;
+                    if (Simulator.EmergencyModeActive)
+                        tempLight = new TrafficLightContract() { Status = TrafficLightStatus.Red, Direction = convertDirection(roadSign.Rotation), ID = roadSign.ID, PosX = roadSign.X, PosY = roadSign.Y };
+                    else
+                        tempLight = new TrafficLightContract() { Status = convertStatus(roadSign.Status), Direction = convertDirection(roadSign.Rotation),ID=roadSign.ID, PosX=roadSign.X, PosY=roadSign.Y};
                     if (tempGroup != null)
                     {
                         tempGroup.TrafficLights.Add(tempLight);
@@ -128,7 +132,8 @@ namespace Simulator.Simulation.WCFInterfaces
 
         public static void SetTrafficLightUpdate(Simulator simu, List<TrafficLightContract> trafficlightList)
         {
-            foreach(TrafficLightContract trafficLight in trafficlightList)
+            Simulator.EmergencyModeActive = false;
+            foreach (TrafficLightContract trafficLight in trafficlightList)
             {
                 TrafficLight sign = (TrafficLight)simu.allDynamicObjects.Find(x => x.ID == trafficLight.ID);
                 sign.Status = convertStatus(trafficLight.Status);
