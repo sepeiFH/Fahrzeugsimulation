@@ -19,7 +19,7 @@ namespace Simulator.Simulation
         private Stopwatch stopWatch;
         private List<Coordiantes> spawningPoints;
         private List<Vehicle> vehicleList;
-        public List<RoadSign> roadSignList;
+        public List<TrafficLight> roadSignList;
         Random rand = new Random();
         private int idCount = 0;
         public TmxMap map;
@@ -104,7 +104,7 @@ namespace Simulator.Simulation
             initSpawningList();
             BlockMapping.Blocks.Count();
             allDynamicObjects = new List<DynamicBlock>();
-            roadSignList = new List<RoadSign>();
+            roadSignList = new List<TrafficLight>();
             vehicleList = new List<Vehicle>();
             //allRoadSigns = new List<RoadSign>();
             //allVehicles = new List<Vehicle>();
@@ -119,11 +119,14 @@ namespace Simulator.Simulation
                         {
                             RoadSign roadSign = new RoadSign() { Block = obj };
                             if (obj.Tile.Gid == TrafficLight.RedGID)
+                            {
                                 roadSign = new TrafficLight() { Block = obj };
-                            roadSign.ID = ++idCount;
+                                roadSignList.Add((TrafficLight)roadSign);
+                            }
                             //allRoadSigns.Add(roadSign);
+                            roadSign.ID = ++idCount;
                             allDynamicObjects.Add(roadSign);
-                            roadSignList.Add(roadSign);
+                            //if (roadSign.GID == (int)TrafficLight.LightStatus.Red)
                         }
                     }
                 }

@@ -31,6 +31,12 @@
   <wsdl:message name="SimulatorServiceTrafficControl_GetTrafficLightGroups_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetTrafficLightGroupsResponse" />
   </wsdl:message>
+  <wsdl:message name="SimulatorServiceTrafficControl_SetTrafficLightUpdate_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetTrafficLightUpdate" />
+  </wsdl:message>
+  <wsdl:message name="SimulatorServiceTrafficControl_SetTrafficLightUpdate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetTrafficLightUpdateResponse" />
+  </wsdl:message>
   <wsdl:portType name="SimulatorServiceMap">
     <wsdl:operation name="GetMap">
       <wsdl:input wsam:Action="http://tempuri.org/SimulatorServiceMap/GetMap" message="tns:SimulatorServiceMap_GetMap_InputMessage" />
@@ -49,6 +55,10 @@
     <wsdl:operation name="GetTrafficLightGroups">
       <wsdl:input wsam:Action="http://tempuri.org/SimulatorServiceTrafficControl/GetTrafficLightGroups" message="tns:SimulatorServiceTrafficControl_GetTrafficLightGroups_InputMessage" />
       <wsdl:output wsam:Action="http://tempuri.org/SimulatorServiceTrafficControl/GetTrafficLightGroupsResponse" message="tns:SimulatorServiceTrafficControl_GetTrafficLightGroups_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetTrafficLightUpdate">
+      <wsdl:input wsam:Action="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdate" message="tns:SimulatorServiceTrafficControl_SetTrafficLightUpdate_InputMessage" />
+      <wsdl:output wsam:Action="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdateResponse" message="tns:SimulatorServiceTrafficControl_SetTrafficLightUpdate_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_SimulatorServiceMap" type="tns:SimulatorServiceMap">
@@ -85,6 +95,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetTrafficLightGroups">
       <soap:operation soapAction="http://tempuri.org/SimulatorServiceTrafficControl/GetTrafficLightGroups" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetTrafficLightUpdate">
+      <soap:operation soapAction="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

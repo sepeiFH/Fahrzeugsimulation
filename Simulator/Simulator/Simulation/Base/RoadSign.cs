@@ -9,7 +9,6 @@ namespace Simulator.Simulation.Base
 {
     public class RoadSign : BlockObject
     {
-        public int ID { get; set; }
         public int RoadSignGroup
         {
             get
@@ -24,6 +23,9 @@ namespace Simulator.Simulation.Base
                 return -1;
             }
         }
+
+        public override int ID { get; set; }
+
         public RoadSign()
         {
             GID = -1;
@@ -106,6 +108,7 @@ namespace Simulator.Simulation.Base
         private int currentTick = -1;
         public override void update()
         {
+            /*
             if (currentTick < 0)
                 currentTick = startOffset;
 
@@ -116,7 +119,7 @@ namespace Simulator.Simulation.Base
 
             if (currentTick++ > redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
                 currentTick = 0;
-
+                */
             /*if (stopWatch == null)
             {
                 stopWatch = new StopWatchWithOffset(TimeSpan.FromTicks(TimeSpan.TicksPerSecond * startOffsetSecond));

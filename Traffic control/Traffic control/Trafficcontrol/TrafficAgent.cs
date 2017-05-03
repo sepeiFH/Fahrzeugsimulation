@@ -21,6 +21,7 @@ namespace Traffic_control.Trafficcontrol
         private Task logicTask;
         private CancellationTokenSource token;
         private List<TrafficLight> trafficLights;
+        private static bool stateChanged;
 
         private ServiceReference1.SimulatorServiceTrafficControlClient clientSimulator;
 
@@ -70,6 +71,8 @@ namespace Traffic_control.Trafficcontrol
             stopWatch.Start();
 
             clientSimulator = new ServiceReference1.SimulatorServiceTrafficControlClient();
+            stateChanged = false;
+
             while (true)
             {
                 if (stopWatch.Elapsed > TrafficAgentSpeed)
@@ -85,8 +88,7 @@ namespace Traffic_control.Trafficcontrol
 
                         foreach (TrafficLightGroup item in group)
                         {
-                            //if (item.TrafficLightCount == 4)
-                            if (item.ID >= 1 && item.ID <= 4)
+                            if (item.TrafficLightCount == 4)
                             {
                                 if (item.Left.Duration < 0)
                                 {
@@ -101,6 +103,11 @@ namespace Traffic_control.Trafficcontrol
                                 }
 
                                 item.UpdateTrafficLights();
+                                if (stateChanged)
+                                {
+                                    SetUpdatedTrafficLightData();
+                                    stateChanged = false;
+                                }
                             }
                         }
                     }
@@ -129,6 +136,32 @@ namespace Traffic_control.Trafficcontrol
                 newStatus = TrafficLight.LightStatus.YellowRed;
 
             return newStatus;
+        }
+        private ServiceReference1.TrafficLightStatus convertLightStatus(TrafficLight.LightStatus status)
+        {
+            ServiceReference1.TrafficLightStatus newStatus;
+
+            if (status == TrafficLight.LightStatus.Green)
+                newStatus = ServiceReference1.TrafficLightStatus.Green;
+            else if (status == TrafficLight.LightStatus.Red)
+                newStatus = ServiceReference1.TrafficLightStatus.Red;
+            else if (status == TrafficLight.LightStatus.Yellow)
+                newStatus = ServiceReference1.TrafficLightStatus.Yellow;
+            else
+                newStatus = ServiceReference1.TrafficLightStatus.YellowRed;
+
+            return newStatus;
+        }
+
+        public void SetUpdatedTrafficLightData()
+        {
+            List<ServiceReference1.TrafficLightContract> simulationTrafficLights = new List<ServiceReference1.TrafficLightContract>();
+            foreach (TrafficLight light in trafficLights)
+            {
+                simulationTrafficLights.Add(new ServiceReference1.TrafficLightContract(){ ID = light.ID, Status = convertLightStatus(light.Status) });
+            }
+
+            clientSimulator.SetTrafficLightUpdate(simulationTrafficLights.ToArray());
         }
 
         public void GetTrafficLightData()
@@ -211,6 +244,7 @@ namespace Traffic_control.Trafficcontrol
                         Status = LightStatus.Red;
                         break;
                 }
+                stateChanged = true;
                 Console.WriteLine("Ampel " + ID + " hat auf " + Status + " geschalten");
             }
 

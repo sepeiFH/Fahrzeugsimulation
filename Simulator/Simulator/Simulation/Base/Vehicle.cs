@@ -12,6 +12,7 @@ namespace Simulator.Simulation.Base
         public override double Y { get; set; }
         public override double Rotation { get; set; }
         public override int GID { get; set; }
+        public override int ID { get; set; }
 
         public enum VehicleList
         {

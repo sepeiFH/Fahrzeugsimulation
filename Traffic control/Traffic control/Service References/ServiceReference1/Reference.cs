@@ -402,6 +402,12 @@ namespace Traffic_control.ServiceReference1 {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SimulatorServiceTrafficControl/GetTrafficLightGroups", ReplyAction="http://tempuri.org/SimulatorServiceTrafficControl/GetTrafficLightGroupsResponse")]
         System.Threading.Tasks.Task<Traffic_control.ServiceReference1.TrafficLightGroupContract[]> GetTrafficLightGroupsAsync();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdate", ReplyAction="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdateResponse")]
+        void SetTrafficLightUpdate(Traffic_control.ServiceReference1.TrafficLightContract[] trafficlightList);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdate", ReplyAction="http://tempuri.org/SimulatorServiceTrafficControl/SetTrafficLightUpdateResponse")]
+        System.Threading.Tasks.Task SetTrafficLightUpdateAsync(Traffic_control.ServiceReference1.TrafficLightContract[] trafficlightList);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -445,6 +451,14 @@ namespace Traffic_control.ServiceReference1 {
         
         public System.Threading.Tasks.Task<Traffic_control.ServiceReference1.TrafficLightGroupContract[]> GetTrafficLightGroupsAsync() {
             return base.Channel.GetTrafficLightGroupsAsync();
+        }
+        
+        public void SetTrafficLightUpdate(Traffic_control.ServiceReference1.TrafficLightContract[] trafficlightList) {
+            base.Channel.SetTrafficLightUpdate(trafficlightList);
+        }
+        
+        public System.Threading.Tasks.Task SetTrafficLightUpdateAsync(Traffic_control.ServiceReference1.TrafficLightContract[] trafficlightList) {
+            return base.Channel.SetTrafficLightUpdateAsync(trafficlightList);
         }
     }
 }

@@ -51,10 +51,14 @@ namespace Simulator.Simulation.WCFInterfaces
         {
             return SimulatorServiceHelpder.GetTrafficLightGroups(simu);
         }
-        /*public List<RoadSign> getRoadSigns()
+        public void SetTrafficLightUpdate(List<TrafficLightContract> trafficlightList)
         {
-            return allRoadSigns;
-        }*/
+            SimulatorServiceHelpder.SetTrafficLightUpdate(simu, trafficlightList);
+        }
+        /*public List<RoadSign> getRoadSigns()
+{
+   return allRoadSigns;
+}*/
     }
 
     #endregion
@@ -68,6 +72,9 @@ namespace Simulator.Simulation.WCFInterfaces
 
         [OperationContract]
         List<TrafficLightGroupContract> GetTrafficLightGroups();
+
+        [OperationContract]
+        void SetTrafficLightUpdate(List<TrafficLightContract> trafficlightList);
     }
     #endregion
 
@@ -119,6 +126,31 @@ namespace Simulator.Simulation.WCFInterfaces
             return tempGroupList;
         }
 
+        public static void SetTrafficLightUpdate(Simulator simu, List<TrafficLightContract> trafficlightList)
+        {
+            foreach(TrafficLightContract trafficLight in trafficlightList)
+            {
+                TrafficLight sign = (TrafficLight)simu.allDynamicObjects.Find(x => x.ID == trafficLight.ID);
+                sign.Status = convertStatus(trafficLight.Status);
+                sign.GID = (int)sign.Status;
+            }
+        }
+
+        private static TrafficLight.LightStatus convertStatus(TrafficLightStatus status)
+        {
+            TrafficLight.LightStatus tempStatus;
+
+            if (status == TrafficLightStatus.Green)
+                tempStatus = TrafficLight.LightStatus.Green;
+            else if (status == TrafficLightStatus.Red)
+                tempStatus = TrafficLight.LightStatus.Red;
+            else if (status == TrafficLightStatus.Yellow)
+                tempStatus = TrafficLight.LightStatus.Yellow;
+            else
+                tempStatus = TrafficLight.LightStatus.YellowRed;
+
+            return tempStatus;
+        }
         private static TrafficLightStatus convertStatus(TrafficLight.LightStatus status)
         {
             TrafficLightStatus tempStatus;
@@ -134,7 +166,7 @@ namespace Simulator.Simulation.WCFInterfaces
 
             return tempStatus;
         }
-        
+
         private static TrafficLightDirection convertDirection(double rotation)
         { 
             return rotation == 0 ? TrafficLightDirection.Top : (rotation == 90 ? TrafficLightDirection.Right : (rotation == 180 ? TrafficLightDirection.Bottom : TrafficLightDirection.Left));

@@ -13,6 +13,7 @@ namespace Simulator.Simulation.Base
         public abstract double Rotation { get; set; }
 
         public abstract int GID { get; set; }
+        public abstract int ID { get; set; }
 
         public abstract void update();
     }
