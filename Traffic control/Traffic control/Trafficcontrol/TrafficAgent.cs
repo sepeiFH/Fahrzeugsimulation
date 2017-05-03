@@ -133,7 +133,7 @@ namespace Traffic_control.Trafficcontrol
                                 if (item.Left.Duration < 0)
                                 {
                                     item.SetDuration(item.Left.TickCount * 2);
-                                    item.Top.Offset = item.Left.TickCount;
+                                    //item.Right.Offset = item.Left.TickCount;
                                     // Console.WriteLine("item.Top.Offset: " + item.Top.Offset);
 
                                     item.Bottom.Offset = item.Left.TickCount;

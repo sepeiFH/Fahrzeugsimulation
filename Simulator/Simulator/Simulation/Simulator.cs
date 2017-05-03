@@ -84,10 +84,19 @@ namespace Simulator.Simulation
         private void spawnVehicle()
         {
             int num = rand.Next(1,100);
-            if (num <= Program.settings.Fahrzeuge[0].SpawnRate)
-                setVehicle(rand.Next(1000,1005));
+            int spawnrate = Program.settings.Fahrzeuge[0].SpawnRate;
+            if (num <= spawnrate)
+                setVehicle(Program.settings.Fahrzeuge[0].GID);
+            else if (num <= (spawnrate += Program.settings.Fahrzeuge[1].SpawnRate))
+                setVehicle(Program.settings.Fahrzeuge[1].GID);
+            else if (num <= (spawnrate += Program.settings.Fahrzeuge[2].SpawnRate))
+                setVehicle(Program.settings.Fahrzeuge[2].GID);
+            else if (num <= (spawnrate += Program.settings.Fahrzeuge[3].SpawnRate))
+                setVehicle(Program.settings.Fahrzeuge[3].GID);
+            else if (num <= (spawnrate += Program.settings.Fahrzeuge[4].SpawnRate))
+                setVehicle(Program.settings.Fahrzeuge[4].GID);
             //else if (num < Program.settings.Fahrzeuge[0].SpawnRate + Program.settings.Fahrzeuge[1].SpawnRate)
-                //setVehicle(1002);
+            //setVehicle(1002);
         }
 
         private void setVehicle(int tempGID)

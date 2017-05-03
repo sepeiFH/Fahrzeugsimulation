@@ -10,6 +10,7 @@ namespace Simulator.Simulation.Utilities
     {
         public string Type { get; set; }
         public int SpawnRate { get; set; }
+        public int GID { get; set; }
     }
 
     class SimulationConfig
