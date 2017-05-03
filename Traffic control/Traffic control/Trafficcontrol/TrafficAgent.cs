@@ -132,11 +132,12 @@ namespace Traffic_control.Trafficcontrol
                             {
                                 if (item.Left.Duration < 0)
                                 {
+                                    item.setOffset(150);
                                     item.SetDuration(item.Left.TickCount * 2);
-                                    //item.Right.Offset = item.Left.TickCount;
+                                    // item.Right.Offset = item.Left.TickCount;
                                     // Console.WriteLine("item.Top.Offset: " + item.Top.Offset);
 
-                                    item.Bottom.Offset = item.Left.TickCount;
+                                    // item.Bottom.Offset = item.Left.TickCount;
                                     // Console.WriteLine("item.Bottom.TickCount: " + item.Bottom.Offset);
                                 }
                                 item.UpdateTrafficLights();
@@ -147,27 +148,7 @@ namespace Traffic_control.Trafficcontrol
                             *                  Bottom  |
                             *              
                             **/
-                            /* if (item.TrafficLightCount == 3)
-                             {
-                                 if (item.Left.Duration < 0)
-                                 {
-                                     item.SetDuration(item.Left.TickCount * 2);
-                                     item.Top.Offset = item.Left.TickCount;
-                                     // Console.WriteLine("item.Top.Offset: " + item.Top.Offset);
-
-                                     item.Bottom.Offset = item.Left.TickCount;
-                                     // Console.WriteLine("item.Bottom.TickCount: " + item.Bottom.Offset);
-                                 }
-                                 item.UpdateTrafficLights();
-                             }*/
-
-
-
-                            /*             Top
-                             * -----Left ---------Right--------
-                             *           --------
-                             **/
-                            /*if (item.TrafficLightCount == 3)
+                            if (item.TrafficLightCount == 3)
                             {
                                 if (item.Left.Duration < 0)
                                 {
@@ -179,18 +160,15 @@ namespace Traffic_control.Trafficcontrol
                                     // Console.WriteLine("item.Bottom.TickCount: " + item.Bottom.Offset);
                                 }
                                 item.UpdateTrafficLights();
-                            }*/
+                            }
 
-
-
-                            /*           | Top
-                              *          | ---------Right--------
-                              *          | Bottom
-                              *              
-                              **/
-                            /*if (item.TrafficLightCount == 3)
+                            /*             Top
+                             * -----Left ---------Right--------
+                             *           --------
+                             **/
+                            if (item.TrafficLightCount == 3)
                             {
-                                if (item.Right.Duration < 0)
+                                if (item.Left.Duration < 0)
                                 {
                                     item.SetDuration(item.Left.TickCount * 2);
                                     item.Top.Offset = item.Left.TickCount;
@@ -200,7 +178,26 @@ namespace Traffic_control.Trafficcontrol
                                     // Console.WriteLine("item.Bottom.TickCount: " + item.Bottom.Offset);
                                 }
                                 item.UpdateTrafficLights();
-                            }*/
+                            }
+
+                            /*           | Top
+                              *          | ---------Right--------
+                              *          | Bottom
+                              *              
+                              **/
+                            if (item.TrafficLightCount == 3)
+                            {
+                                if (item.Right.Duration < 0)
+                                {
+                                    item.SetDuration(item.Right.TickCount * 2);
+                                    item.Top.Offset = item.Right.TickCount;
+                                    // Console.WriteLine("item.Top.Offset: " + item.Top.Offset);
+
+                                    item.Bottom.Offset = item.Right.TickCount;
+                                    // Console.WriteLine("item.Bottom.TickCount: " + item.Bottom.Offset);
+                                }
+                                item.UpdateTrafficLights();
+                            }
                             if (stateChanged)
                             {
                                 SetUpdatedTrafficLightData();
@@ -392,12 +389,7 @@ namespace Traffic_control.Trafficcontrol
             public int ID { get; set; }
             private List<TrafficLight> trafficLights;
 
-            public void setOffset(TrafficLight trl)
-            {
-               // trl.Offset 
-            }
-
-
+           
             public TrafficLight Left
             {
                 get { return trafficLights.FirstOrDefault(x => x.Position.X == trafficLights.Min(y => y.Position.X)); }
@@ -437,6 +429,28 @@ namespace Traffic_control.Trafficcontrol
 
                 return temp;
             }
+
+
+            public void setOffset(int offset)
+            {
+                List<TrafficLightGroup> group = TrafficLightGroup.GetAllGroups(trafficLights);
+                foreach (var item in group)
+                {
+                    if (item.TrafficLightCount == 4)
+                    {
+                        item.Top.Offset = offset;
+                        item.Bottom.Offset = offset;
+                    }
+                    if (item.TrafficLightCount == 3)
+                    {
+                        item.Bottom.Offset = offset;
+                    }
+                    /* if (item.TrafficLightCount == 3)
+                     {
+                         item.Left.Offset = offset;
+                     }*/
+                }
+            }   
 
             public void SetDuration(int duration)
             {
