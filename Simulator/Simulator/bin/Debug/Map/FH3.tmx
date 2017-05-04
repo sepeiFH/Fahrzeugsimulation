@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="40" tilewidth="32" tileheight="32" nextobjectid="44">
- <tileset firstgid="1" name="Tiles" tilewidth="32" tileheight="32" tilecount="36" columns="9">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="60" height="40" tilewidth="32" tileheight="32" nextobjectid="46">
+ <tileset firstgid="1" name="Tiles" tilewidth="32" tileheight="32" tilecount="41" columns="9">
   <image source="Tile2104.png" width="288" height="128"/>
  </tileset>
- <tileset firstgid="1000" name="TileCars" tilewidth="64" tileheight="32" tilecount="25" columns="5">
+ <tileset firstgid="42" name="TileCars" tilewidth="64" tileheight="32" tilecount="25" columns="5">
   <image source="TileCars.png" width="320" height="160"/>
  </tileset>
- <tileset firstgid="162" name="Umgebung" tilewidth="320" tileheight="160" tilecount="25" columns="5">
+ <tileset firstgid="67" name="Umgebung" tilewidth="320" tileheight="160" tilecount="25" columns="5">
   <image source="tileUmgebung.png" width="1600" height="800"/>
+ </tileset>
+ <tileset firstgid="92" name="Tiles" tilewidth="32" tileheight="32" tilecount="36" columns="9">
+  <image source="Tile2104.png" width="288" height="128"/>
  </tileset>
  <layer name="Kachelebene 1" width="60" height="40">
   <data encoding="csv">
@@ -54,17 +57,17 @@
 </data>
  </layer>
  <objectgroup name="Umgebung">
-  <object id="17" gid="162" x="11" y="420" width="320" height="160"/>
-  <object id="19" gid="164" x="364" y="244" width="320" height="160"/>
-  <object id="20" gid="164" x="596" y="394" width="320" height="160"/>
-  <object id="21" gid="164" x="367" y="396" width="320" height="160"/>
-  <object id="22" gid="165" x="1637" y="756" width="320" height="160"/>
-  <object id="23" gid="164" x="591" y="242" width="320" height="160"/>
-  <object id="24" gid="163" x="653" y="1033" width="320" height="160"/>
-  <object id="25" gid="163" x="895" y="1032" width="320" height="160"/>
-  <object id="26" gid="163" x="1141" y="1033" width="320" height="160"/>
-  <object id="27" gid="163" x="1626" y="1032.5" width="320" height="160"/>
-  <object id="28" gid="163" x="1380" y="1031.5" width="320" height="160"/>
+  <object id="17" gid="67" x="11" y="420" width="320" height="160"/>
+  <object id="19" gid="69" x="364" y="244" width="320" height="160"/>
+  <object id="20" gid="69" x="596" y="394" width="320" height="160"/>
+  <object id="21" gid="69" x="367" y="396" width="320" height="160"/>
+  <object id="22" gid="70" x="1637" y="756" width="320" height="160"/>
+  <object id="23" gid="69" x="591" y="242" width="320" height="160"/>
+  <object id="24" gid="68" x="653" y="1033" width="320" height="160"/>
+  <object id="25" gid="68" x="895" y="1032" width="320" height="160"/>
+  <object id="26" gid="68" x="1141" y="1033" width="320" height="160"/>
+  <object id="27" gid="68" x="1626" y="1032.5" width="320" height="160"/>
+  <object id="28" gid="68" x="1380" y="1031.5" width="320" height="160"/>
  </objectgroup>
  <objectgroup name="Verkehrszeichen">
   <object id="5" name="Ampel1" gid="12" x="576" y="102" width="32" height="32">
@@ -157,9 +160,19 @@
     <property name="Group" type="int" value="6"/>
    </properties>
   </object>
+  <object id="44" name="AmpelSF2" gid="12" x="1181" y="356" width="32" height="32" rotation="180">
+   <properties>
+    <property name="Group" type="int" value="4"/>
+   </properties>
+  </object>
+  <object id="45" name="AmpelSF1" gid="12" x="603" y="355" width="32" height="32" rotation="90">
+   <properties>
+    <property name="Group" type="int" value="2"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup name="Vehicles">
-  <object id="9" gid="1000" x="705" y="66" width="64" height="32"/>
+  <object id="9" gid="42" x="705" y="66" width="64" height="32"/>
   <object id="10" gid="37" x="635.17" y="89.7786" width="64" height="32" rotation="-29.7745"/>
   <object id="13" gid="39" x="810" y="66" width="64" height="32"/>
   <object id="14" gid="40" x="864" y="66" width="64" height="32"/>

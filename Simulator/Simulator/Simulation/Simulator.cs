@@ -15,8 +15,11 @@ namespace Simulator.Simulation
     {
         #region Fields
         public readonly int RefreshesPerSecond = 50;
+        public readonly int EmergencySeconds = 10;
         private readonly TimeSpan SimulatorSpeed;
+        private readonly TimeSpan EmergencyTime;
         private Stopwatch stopWatch;
+        public Stopwatch emergencyWatch;
         private List<Coordiantes> spawningPoints;
         private List<Vehicle> vehicleList;
         public List<TrafficLight> roadSignList;
@@ -45,6 +48,7 @@ namespace Simulator.Simulation
         public Simulator()
         {
             SimulatorSpeed = TimeSpan.FromTicks(TimeSpan.TicksPerSecond / RefreshesPerSecond);
+            EmergencyTime = TimeSpan.FromTicks(TimeSpan.TicksPerSecond * EmergencySeconds);
         }
 
         public Thread GetSimulatorThread()
@@ -59,12 +63,18 @@ namespace Simulator.Simulation
         private void TickLogic()
         {
             stopWatch = new Stopwatch();
+            emergencyWatch = new Stopwatch();
             stopWatch.Start();
             while (true)
             {
                 if (stopWatch.Elapsed > SimulatorSpeed)
                 {
                     spawnVehicle();
+                    if (emergencyWatch.Elapsed > EmergencyTime)
+                    {
+                        EmergencyModeActive = true;
+                        emergencyWatch.Stop();
+                    }
                     foreach (DynamicBlock dynObject in allDynamicObjects)
                         dynObject.update();
                     //Update All Cars

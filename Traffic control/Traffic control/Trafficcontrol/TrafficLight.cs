@@ -6,24 +6,73 @@ using System.Threading.Tasks;
 
 namespace Traffic_control.Trafficcontrol
 {
-    class TrafficLight
+    public class TrafficLight
     {
-        // private members
-        private int duration;
-        private int id;
-        private int state; // 1 = green, 2 = yellow, 3 = red
-        private int isGreen;
-        private int isYellow;
-        private int isRed;
+        public LightStatus Status { get; set; }
+        public int Group { get; set; }
 
+        public int ID { get; set; }
 
-        public TrafficLight()
+        public StreetDirection Direction { get; set; }
+
+        private int redPhaseTicks = 100;
+        private int yellowPhaseTicks = 40;
+        private int greenPhaseTicks = 150;
+
+        public int TickCount
         {
-            this.duration = 5;
-            this.isGreen = 1;
-            this.isYellow = 2;
-            this.isRed = 3;
+            get { return redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks; }
         }
+
+        public enum LightStatus
+        {
+            Red = 12,
+            Yellow = 13,
+            Green = 14,
+            YellowRed = 15
+        }
+        public enum StreetDirection
+        {
+            All,
+            Straight,
+            Right,
+            Left
+        }
+        #region Constructor
+
+        public TrafficLight(LightStatus status, int @group, int id, StreetDirection direction)
+        {
+            Status = status;
+            Group = @group;
+            ID = id;
+            Direction = direction;
+        }
+
+        #endregion
+
+        private void changeState()
+        {
+            switch (Status)
+            {
+                case LightStatus.Red:
+                    Status = LightStatus.YellowRed;
+                    break;
+                case LightStatus.YellowRed:
+                    Status = LightStatus.Green;
+                    break;
+                case LightStatus.Green:
+                    Status = LightStatus.Yellow;
+                    break;
+                case LightStatus.Yellow:
+                    Status = LightStatus.Red;
+                    break;
+            }
+            Console.WriteLine("Ampel " + ID + " hat auf " + Status + " geschalten");
+        }
+
+        private int currentTick = -1;
+        private int offset = 0;
+        private int duration = -1;
 
         public int Duration
         {
@@ -31,32 +80,24 @@ namespace Traffic_control.Trafficcontrol
             set { duration = value; }
         }
 
-        public int IsGreen
+        public int Offset
         {
-            get { return isGreen; }
-            set { isGreen = value; }
-        }
-        public int IsYellow
-        {
-            get { return isYellow; }
-            set { isYellow = value; }
+            get { return offset; }
+            set { offset = value; }
         }
 
-        public int IsRed
+        public void update(ref bool stateChanged)
         {
-            get { return isRed; }
-            set { isRed = value; }
+            if (currentTick == offset + redPhaseTicks || currentTick == offset + redPhaseTicks + yellowPhaseTicks ||
+                currentTick == offset + redPhaseTicks + yellowPhaseTicks + greenPhaseTicks ||
+                currentTick == offset + redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
+            {
+                changeState();
+                stateChanged = true;
+            }
+
+            if (currentTick++ > Duration)
+                currentTick = 0;
         }
-
-        /*  public int getState()
-          {
-              return state;
-          }
-
-          public int setState(int s)
-          {
-              return state = s;
-          }
-          */
     }
 }

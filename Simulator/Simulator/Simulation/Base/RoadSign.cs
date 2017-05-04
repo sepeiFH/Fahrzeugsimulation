@@ -69,15 +69,24 @@ namespace Simulator.Simulation.Base
             Status = LightStatus.Red;
         }
 
-        public int startOffset = 0;
-        public int redPhaseTicks = 50;
-        private int yellowPhaseTicks = 20;
-        private int greenPhaseTicks = 60;
+        private int emergencyPhaseTicks = 30;
 
         private void changeState()
         {
             //Console.WriteLine("Ampel State Changed");
             if (Status == LightStatus.Red)
+            {
+                Status = LightStatus.Yellow;
+                base.Block = Block;
+                return;
+            }
+            if (Status == LightStatus.YellowRed)
+            {
+                Status = LightStatus.Yellow;
+                base.Block = Block;
+                return;
+            }
+            if (Status == LightStatus.Green)
             {
                 Status = LightStatus.Yellow;
                 base.Block = Block;
@@ -97,27 +106,17 @@ namespace Simulator.Simulation.Base
             }
         }
 
-        private int currentTick = -1;
+        private int currentTick = 0;
         public override void update()
         {
             if (Simulator.EmergencyModeActive)
             {
-                if (currentTick < 0)
-                    currentTick = startOffset;
-
-                if (currentTick == redPhaseTicks || currentTick == redPhaseTicks + yellowPhaseTicks ||
-                    currentTick == redPhaseTicks + yellowPhaseTicks + greenPhaseTicks ||
-                    currentTick == redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
+                if (++currentTick == emergencyPhaseTicks)
+                {
                     changeState();
-
-                if (currentTick++ > redPhaseTicks + 2 * yellowPhaseTicks + greenPhaseTicks)
                     currentTick = 0;
+                }
             }
-            /*if (stopWatch == null)
-            {
-                stopWatch = new StopWatchWithOffset(TimeSpan.FromTicks(TimeSpan.TicksPerSecond * startOffsetSecond));
-                stopWatch.Start();
-            }*/
         }
     }
 }

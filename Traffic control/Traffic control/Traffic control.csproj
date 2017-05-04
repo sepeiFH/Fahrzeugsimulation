@@ -57,7 +57,7 @@
     </Compile>
     <Compile Include="Trafficcontrol\TrafficAgent.cs" />
     <Compile Include="Trafficcontrol\TrafficLight.cs" />
-    <Compile Include="Trafficcontrol\TrafficLightGroups.cs" />
+    <Compile Include="Trafficcontrol\TrafficLightGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

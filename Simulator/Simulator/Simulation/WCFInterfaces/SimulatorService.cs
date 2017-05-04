@@ -110,9 +110,9 @@ namespace Simulator.Simulation.WCFInterfaces
                     TrafficLightGroupContract tempGroup = tempGroupList.Find(X => X.ID.Equals(roadSign.RoadSignGroup));
                     TrafficLightContract tempLight;
                     if (Simulator.EmergencyModeActive)
-                        tempLight = new TrafficLightContract() { Status = TrafficLightStatus.Red, Direction = convertDirection(roadSign.Rotation), ID = roadSign.ID, PosX = roadSign.X, PosY = roadSign.Y };
+                        tempLight = new TrafficLightContract() { Status = TrafficLightStatus.Red, Position = convertPosition(roadSign.Rotation), ID = roadSign.ID, PosX = roadSign.X, PosY = roadSign.Y };
                     else
-                        tempLight = new TrafficLightContract() { Status = convertStatus(roadSign.Status), Direction = convertDirection(roadSign.Rotation),ID=roadSign.ID, PosX=roadSign.X, PosY=roadSign.Y};
+                        tempLight = new TrafficLightContract() { Status = convertStatus(roadSign.Status), Position = convertPosition(roadSign.Rotation),ID=roadSign.ID, PosX=roadSign.X, PosY=roadSign.Y};
                     if (tempGroup != null)
                     {
                         tempGroup.TrafficLights.Add(tempLight);
@@ -133,6 +133,7 @@ namespace Simulator.Simulation.WCFInterfaces
         public static void SetTrafficLightUpdate(Simulator simu, List<TrafficLightContract> trafficlightList)
         {
             Simulator.EmergencyModeActive = false;
+            simu.emergencyWatch.Restart();
             foreach (TrafficLightContract trafficLight in trafficlightList)
             {
                 TrafficLight sign = (TrafficLight)simu.allDynamicObjects.Find(x => x.ID == trafficLight.ID);
@@ -172,9 +173,9 @@ namespace Simulator.Simulation.WCFInterfaces
             return tempStatus;
         }
 
-        private static TrafficLightDirection convertDirection(double rotation)
+        private static TrafficLightPosition convertPosition(double rotation)
         { 
-            return rotation == 0 ? TrafficLightDirection.Top : (rotation == 90 ? TrafficLightDirection.Right : (rotation == 180 ? TrafficLightDirection.Bottom : TrafficLightDirection.Left));
+            return rotation == 90 ? TrafficLightPosition.Top : (rotation == 180 ? TrafficLightPosition.Right : (rotation == 270 ? TrafficLightPosition.Bottom : TrafficLightPosition.Left));
         }
     }
 
@@ -192,6 +193,8 @@ namespace Simulator.Simulation.WCFInterfaces
     {
         [DataMember]
         public TrafficLightDirection Direction { get; set; }
+        [DataMember]
+        public TrafficLightPosition Position { get; set; }
 
         [DataMember]
         public TrafficLightStatus Status { get; set; }
@@ -224,7 +227,7 @@ namespace Simulator.Simulation.WCFInterfaces
     }
 
     [DataContract]
-    public enum TrafficLightDirection
+    public enum TrafficLightPosition
     {
         [EnumMember]
         Top,
@@ -234,6 +237,19 @@ namespace Simulator.Simulation.WCFInterfaces
         Left,
         [EnumMember]
         Right
+    }
+
+    [DataContract]
+    public enum TrafficLightDirection
+    {
+        [EnumMember]
+        All,
+        [EnumMember]
+        Straight,
+        [EnumMember]
+        Right,
+        [EnumMember]
+        Left
     }
 
     [DataContract]

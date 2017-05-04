@@ -192,6 +192,9 @@ namespace Traffic_control.ServiceReference1 {
         private double PosYField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Traffic_control.ServiceReference1.TrafficLightPosition PositionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private Traffic_control.ServiceReference1.TrafficLightStatus StatusField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
@@ -270,6 +273,19 @@ namespace Traffic_control.ServiceReference1 {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public Traffic_control.ServiceReference1.TrafficLightPosition Position {
+            get {
+                return this.PositionField;
+            }
+            set {
+                if ((this.PositionField.Equals(value) != true)) {
+                    this.PositionField = value;
+                    this.RaisePropertyChanged("Position");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public Traffic_control.ServiceReference1.TrafficLightStatus Status {
             get {
                 return this.StatusField;
@@ -295,6 +311,23 @@ namespace Traffic_control.ServiceReference1 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
     [System.Runtime.Serialization.DataContractAttribute(Name="TrafficLightDirection", Namespace="http://schemas.datacontract.org/2004/07/Simulator.Simulation.WCFInterfaces")]
     public enum TrafficLightDirection : int {
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        All = 0,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Straight = 1,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Right = 2,
+        
+        [System.Runtime.Serialization.EnumMemberAttribute()]
+        Left = 3,
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="TrafficLightPosition", Namespace="http://schemas.datacontract.org/2004/07/Simulator.Simulation.WCFInterfaces")]
+    public enum TrafficLightPosition : int {
         
         [System.Runtime.Serialization.EnumMemberAttribute()]
         Top = 0,
