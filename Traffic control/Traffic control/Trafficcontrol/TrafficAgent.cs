@@ -20,7 +20,7 @@ namespace Traffic_control.Trafficcontrol
         private Stopwatch stopWatch;
         private Task logicTask;
         private CancellationTokenSource token;
-        private List<TrafficLight> trafficLights;
+        private List<TrafficLightGroup> trafficLightGroups;
         private static bool stateChanged;
 
         private ServiceReference1.SimulatorServiceTrafficControlClient clientSimulator;
@@ -80,14 +80,13 @@ namespace Traffic_control.Trafficcontrol
                     if (cancelToken.IsCancellationRequested)
                         break;
 
-                    if (trafficLights == null)
+                    if (trafficLightGroups == null)
                         GetTrafficLightData();
                     else
                     {
-                        List<TrafficLightGroup> group = TrafficLightGroup.GetAllGroups(trafficLights);
-
-                        foreach (TrafficLightGroup item in group)
+                        foreach (TrafficLightGroup item in trafficLightGroups)
                         {
+<<<<<<< HEAD
                             /*              Top
                              * ------Left------------Right------
                              *              Bottom
@@ -213,6 +212,16 @@ namespace Traffic_control.Trafficcontrol
                                 SetUpdatedTrafficLightData();
                                 stateChanged = false;
                             }
+=======
+                            item.SetDuration();
+                            item.setOffset();
+                            item.UpdateTrafficLights(ref stateChanged);
+                        }
+                        if (stateChanged)
+                        {
+                            SetUpdatedTrafficLightData();
+                            stateChanged = false;
+>>>>>>> origin/newTrafficControl
                         }
                     }
                     stopWatch.Restart();
@@ -256,13 +265,29 @@ namespace Traffic_control.Trafficcontrol
 
             return newStatus;
         }
+        private TrafficLightGroup.Position convertLightPosition(ServiceReference1.TrafficLightPosition oldPosition)
+        {
+            TrafficLightGroup.Position newPosition;
+
+            if (oldPosition == ServiceReference1.TrafficLightPosition.Top)
+                newPosition = TrafficLightGroup.Position.Top;
+            else if (oldPosition == ServiceReference1.TrafficLightPosition.Bottom)
+                newPosition = TrafficLightGroup.Position.Bottom;
+            else if (oldPosition == ServiceReference1.TrafficLightPosition.Left)
+                newPosition = TrafficLightGroup.Position.Left;
+            else
+                newPosition = TrafficLightGroup.Position.Right;
+            return newPosition;
+        }
 
         public void SetUpdatedTrafficLightData()
         {
             List<ServiceReference1.TrafficLightContract> simulationTrafficLights = new List<ServiceReference1.TrafficLightContract>();
-            foreach (TrafficLight light in trafficLights)
+            foreach (TrafficLightGroup group in trafficLightGroups)
             {
-                simulationTrafficLights.Add(new ServiceReference1.TrafficLightContract(){ ID = light.ID, Status = convertLightStatus(light.Status) });
+                foreach (List<TrafficLight> lights in group.LightDict.Values)
+                    foreach (TrafficLight light in lights)
+                        simulationTrafficLights.Add(new ServiceReference1.TrafficLightContract() { ID = light.ID, Status = convertLightStatus(light.Status) });
             }
 
             clientSimulator.SetTrafficLightUpdate(simulationTrafficLights.ToArray());
@@ -271,12 +296,29 @@ namespace Traffic_control.Trafficcontrol
         public void GetTrafficLightData()
         {
             var groups = clientSimulator.GetTrafficLightGroups();
+            trafficLightGroups = new List<TrafficLightGroup>();
+            foreach (var group in groups)
+            {
+                TrafficLightGroup tempGroup = new TrafficLightGroup() { LightDict = new Dictionary<TrafficLightGroup.Position, List<TrafficLight>>() };
+                tempGroup.ID = group.ID;
+
+                foreach (var light in group.TrafficLights)
+                {
+                    if (!tempGroup.LightDict.ContainsKey(convertLightPosition(light.Position)))
+                        tempGroup.LightDict.Add(convertLightPosition(light.Position), new List<TrafficLight>() { new TrafficLight(convertLightStatus(light.Status), group.ID, light.ID, TrafficLight.StreetDirection.All) });
+                    else
+                        tempGroup.LightDict[convertLightPosition(light.Position)].Add(new TrafficLight(convertLightStatus(light.Status), group.ID, light.ID, TrafficLight.StreetDirection.All));
+                }
+
+                trafficLightGroups.Add(tempGroup);
+            }
+            /*var groups = clientSimulator.GetTrafficLightGroups();
             trafficLights = new List<TrafficLight>();
             foreach (var group in groups)
             {
                 foreach(var light in group.TrafficLights)
-                    trafficLights.Add(new TrafficLight(convertLightStatus(light.Status), group.ID, light.ID, new Point((int)light.PosX, (int)light.PosY)));
-            }
+                    trafficLights.Add(new TrafficLight(convertLightStatus(light.Status), group.ID, light.ID, TrafficLight.StreetDirection.All));
+            }*/
             /*
             trafficLights = new List<TrafficLight>()
             {
@@ -291,6 +333,7 @@ namespace Traffic_control.Trafficcontrol
         }
 
         #endregion Agent Ticks
+<<<<<<< HEAD
 
         #region TrafficLight
 
@@ -478,5 +521,7 @@ namespace Traffic_control.Trafficcontrol
 
 
         #endregion TrafficLightGroup
+=======
+>>>>>>> origin/newTrafficControl
     }
 }

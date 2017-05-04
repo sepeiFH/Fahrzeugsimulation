@@ -42,11 +42,21 @@
       <xs:element minOccurs="0" name="Neighbor" nillable="true" type="tns:TrafficLightContract" />
       <xs:element minOccurs="0" name="PosX" type="xs:double" />
       <xs:element minOccurs="0" name="PosY" type="xs:double" />
+      <xs:element minOccurs="0" name="Position" type="tns:TrafficLightPosition" />
       <xs:element minOccurs="0" name="Status" type="tns:TrafficLightStatus" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="TrafficLightContract" nillable="true" type="tns:TrafficLightContract" />
   <xs:simpleType name="TrafficLightDirection">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="All" />
+      <xs:enumeration value="Straight" />
+      <xs:enumeration value="Right" />
+      <xs:enumeration value="Left" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TrafficLightDirection" nillable="true" type="tns:TrafficLightDirection" />
+  <xs:simpleType name="TrafficLightPosition">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Top" />
       <xs:enumeration value="Bottom" />
@@ -54,7 +64,7 @@
       <xs:enumeration value="Right" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:element name="TrafficLightDirection" nillable="true" type="tns:TrafficLightDirection" />
+  <xs:element name="TrafficLightPosition" nillable="true" type="tns:TrafficLightPosition" />
   <xs:simpleType name="TrafficLightStatus">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Red">
