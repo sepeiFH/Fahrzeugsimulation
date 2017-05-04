@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace Simulator.Simulation.Utilities
 {
-    class Fahrzeug
+    public class Fahrzeug
     {
         public string Type { get; set; }
         public int SpawnRate { get; set; }
         public int GID { get; set; }
     }
 
-    class SimulationConfig
+    public class SimulationConfig
     {
+        public int EmergencyTime { get; set; }
         public int Takt { get; set; }
         public String BaseUrl { get; set; }
         public List<Fahrzeug> Fahrzeuge { get; set; }

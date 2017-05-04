@@ -27,16 +27,6 @@ namespace Simulator.Simulation.Base
         private int count;
         public override void update()
         {
-            if (X < -100)
-                X = 2000;
-            else if (X > 2000)
-                X = -100;
-
-            if (Y < -100)
-                Y = 1000;
-            if (Y > 1000)
-                Y = -100;
-
             MoveVehicle(5);
             if (count++ % 2 == 0)
             {
