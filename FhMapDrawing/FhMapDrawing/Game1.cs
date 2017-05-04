@@ -18,7 +18,7 @@ namespace FhMapDrawing
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         TmxMap map;
-        float scale = 1;
+        float scale = 0.5f;
         private List<TilesInfo> tiles;
         private ServiceReference1.SimulatorServiceMapClient clientSimulator;
 
@@ -73,6 +73,10 @@ namespace FhMapDrawing
                 fileStream.Dispose();
                 tiles.Add(new TilesInfo() { Tileset = tileset, TileWidth = tile.TileWidth, TileHeight = tile.TileHeight, TilesetTilesWide = tileset.Width / tile.TileWidth, TilesetTilesHigh = tileset.Height / tile.TileHeight, Name = tile.Image.Source });
             }
+
+            graphics.PreferredBackBufferWidth = 900;
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.ApplyChanges();
 
             /*
             //Map
@@ -226,7 +230,7 @@ namespace FhMapDrawing
                         int x = (int)((obj.X) * scale) + temp.TileWidth / 2;
                         int y = (int)((obj.Y) * scale) - temp.TileHeight / 2;
 
-                        spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth / 2, temp.TileHeight / 2), SpriteEffects.None, 1);
+                        //spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth * scale / 2, temp.TileHeight * scale / 2), SpriteEffects.None, 1);
                     }
                 }
             }
@@ -297,7 +301,7 @@ namespace FhMapDrawing
             catch (Exception e)
             {
                 //TODO: print Disconnected message
-                spriteBatch.DrawString(new SpriteFont(), "Disconnected", new Vector2(0,0), Color.Red)
+                //spriteBatch.DrawString(new SpriteFont(), "Disconnected", new Vector2(0,0), Color.Red)
             }
 
             spriteBatch.End();
