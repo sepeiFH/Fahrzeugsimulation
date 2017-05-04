@@ -230,61 +230,74 @@ namespace FhMapDrawing
                     }
                 }
             }
-            var items = clientSimulator.GetDynamicObjects();
-            foreach (BlockObjectContract item in items)
+            try
             {
-                if (item.GID < 100)
+                var items = clientSimulator.GetDynamicObjects();
+                foreach (BlockObjectContract item in items)
                 {
-                    TilesInfo temp = tiles.Find(z => z.Name.Contains("2104"));
-                    int tileFrame = item.GID - 1;
-                    int column = tileFrame % temp.TilesetTilesWide;
-                    int row = (int)Math.Floor((double)tileFrame / (double)temp.TilesetTilesWide);
-                    float rotate = (float) (item.Rotation / 180 * Math.PI);
-
-                    int dynX = 0, dynY = 0;
-
-                    if (item.Rotation >= 0 && item.Rotation <= 89)
+                    if (item.GID < 100)
                     {
-                        dynY = 16;
-                        dynX = -16;
+                        TilesInfo temp = tiles.Find(z => z.Name.Contains("2104"));
+                        int tileFrame = item.GID - 1;
+                        int column = tileFrame % temp.TilesetTilesWide;
+                        int row = (int)Math.Floor((double)tileFrame / (double)temp.TilesetTilesWide);
+                        float rotate = (float)(item.Rotation / 180 * Math.PI);
+
+                        int dynX = 0, dynY = 0;
+
+                        if (item.Rotation >= 0 && item.Rotation <= 89)
+                        {
+                            dynY = 16;
+                            dynX = -16;
+                        }
+                        else if (item.Rotation == 180)
+                        {
+                            dynY = -16;
+                            dynX = +16;
+                        }
+                        else if (item.Rotation == 270)
+                        {
+                            dynX = 16;
+                            dynY = 16;
+                        }
+                        else if (item.Rotation == 90)
+                        {
+                            dynX = -16;
+                            dynY = -16;
+                        }
+
+                        int x = (int)((item.X - dynX) * scale);
+                        int y = (int)((item.Y - dynY) * scale);
+
+                        Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
+
+                        spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(16, 16), SpriteEffects.None, 1);
                     }
-                    else if(item.Rotation == 180)
+                    else if (item.GID > 100 && item.GID < 200)
                     {
-                        dynY = -16;
-                        dynX = +16;
-                    }else if (item.Rotation == 270)
-                    {
-                        dynX = 16;
-                        dynY = 16;
+
                     }
-                    else if (item.Rotation == 90)
+                    else if (item.GID > 999)
                     {
-                        dynX = -16;
-                        dynY = -16;
+                        TilesInfo temp = tiles.Find(z => z.Name.Contains("TileCars"));
+                        int tileFrame = item.GID - 1000;
+                        int column = tileFrame % temp.TileWidth;
+                        int row = (int)Math.Floor((double)tileFrame / (double)temp.TileWidth);
+                        float rotate = (float)(item.Rotation / 180 * Math.PI);
+
+                        Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
+
+                        int x = (int)((item.X) * scale);
+                        int y = (int)((item.Y) * scale);
+
+                        spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth, temp.TileHeight), SpriteEffects.None, 1);
                     }
-
-                    int x = (int)((item.X - dynX) * scale);
-                    int y = (int)((item.Y - dynY) * scale);
-
-                    Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
-
-                    spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(16, 16), SpriteEffects.None, 1);
-                } else if(item.GID > 100 && item.GID < 200){
-
-                }else if (item.GID > 999) {
-                    TilesInfo temp = tiles.Find(z => z.Name.Contains("TileCars"));
-                    int tileFrame = item.GID - 1000;
-                    int column = tileFrame % temp.TileWidth;
-                    int row = (int)Math.Floor((double)tileFrame / (double)temp.TileWidth);
-                    float rotate = (float)(item.Rotation / 180 * Math.PI);
-
-                    Rectangle tilesetRec = new Rectangle(temp.TileWidth * column, temp.TileHeight * row, temp.TileWidth, temp.TileHeight);
-
-                    int x = (int)((item.X) * scale);
-                    int y = (int)((item.Y) * scale);
-
-                    spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth, temp.TileHeight), SpriteEffects.None, 1);
                 }
+            }
+            catch (Exception e)
+            {
+                //TODO: print Disconnected message
+                spriteBatch.DrawString(new SpriteFont(), "Disconnected", new Vector2(0,0), Color.Red)
             }
 
             spriteBatch.End();
