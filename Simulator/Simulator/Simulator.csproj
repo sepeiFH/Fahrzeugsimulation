@@ -64,6 +64,10 @@
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\Utilities\StopWatchWithOffset.cs" />
     <Compile Include="Simulation\WCFInterfaces\SimulatorService.cs" />
+    <Compile Include="VehicleAgents\CarMovementAgent.cs" />
+    <Compile Include="VehicleAgents\MotorCycleMovementAgent.cs" />
+    <Compile Include="VehicleAgents\TruckMovementAgent.cs" />
+    <Compile Include="VehicleAgents\VehicleMovementAgent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

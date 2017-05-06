@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simulator.VehicleAgents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,26 +14,53 @@ namespace Simulator.Simulation.Base
         public override double Rotation { get; set; }
         public override int GID { get; set; }
         public override int ID { get; set; }
+        private VehicleMovementAgent driver;
 
         public enum VehicleList
         {
-            LKW1 = 37,
-            Car1 = 38,
+            Car1 = 1004,
+            Car2 = 1001,
+            Truck1 = 1000,
+            Truck2 = 1002,
+            Motorcycle = 1003
         }
         public Vehicle()
         {
         }
+        public Vehicle(Random rand,int gid)
+        {
+            this.GID = gid;
+            switch (GID)
+            {
+                case (int)VehicleList.Car1:
+                    driver = new CarMovementAgent(rand);
+                    break;
+                case (int)VehicleList.Car2:
+                    driver = new CarMovementAgent(rand);
+                    break;
+                case (int)VehicleList.Truck1:
+                    driver = new TruckMovementAgent(rand);
+                    break;
+                case (int)VehicleList.Truck2:
+                    driver = new TruckMovementAgent(rand);
+                    break;
+                case (int)VehicleList.Motorcycle:
+                    driver = new MotorCycleMovementAgent(rand);
+                    break;
+            }
+        }
 
-        private Dictionary<VehicleList, int> vehicleLengths = new Dictionary<VehicleList, int>() { { VehicleList.LKW1, 60 }, { VehicleList.Car1, 32 } };
+        private Dictionary<VehicleList, int> vehicleLengths = new Dictionary<VehicleList, int>() { { VehicleList.Truck1, 60 }, { VehicleList.Car1, 32 } };
         private int count;
         public override void update()
         {
-            MoveVehicle(5);
+            driver.moveVehicle(this);
+            /*MoveVehicle(5);
             if (count++ % 2 == 0)
             {
                 this.Rotation += 0.25;
                 count = 2;
-            }
+            }*/
 
         }
 

@@ -30,6 +30,7 @@ namespace Simulator.Simulation
         Random rand = new Random();
         private int idCount = 0;
         public TmxMap map;
+        private List<List<int>> Streetmap;
         //public List<RoadSign> allRoadSigns;
         //public List<Vehicle> allVehicles;
 
@@ -64,7 +65,7 @@ namespace Simulator.Simulation
 
         #region Init
         public void init(SimulationConfig settings)
-        {
+        { 
             RefreshesPerSecond = settings.Takt;
             EmergencySeconds = settings.EmergencyTime;
             spawningTicks = RefreshesPerSecond * settings.SpawnTimeFrame;
@@ -188,9 +189,16 @@ namespace Simulator.Simulation
         { 
             int randNum = rand.Next(1, spawningPoints.Count());
             Coordiantes coordinates = spawningPoints[randNum-1];
-            Vehicle vehicle = new Vehicle() { GID = tempGID, Rotation = coordinates.Rotation, X = coordinates.X, Y = coordinates.Y};
+            Vehicle vehicle = new Vehicle(rand, tempGID) { Rotation = coordinates.Rotation, X = coordinates.X, Y = coordinates.Y};
             allDynamicObjects.Add(vehicle);
         }
+        #endregion
+
+        #region vehicle interaction
+        /*
+        public void getMapInfo(double vehicleX, double vehicleY, side vehicleSide, int vehicleRange)
+        {
+        }*/
         #endregion
     }
 }
