@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Simulator.VehicleAgents
 {
-    abstract class VehicleMovementAgent
+    public abstract class VehicleMovementAgent
     {
         #region Fields
         #region private Fields
@@ -18,7 +18,7 @@ namespace Simulator.VehicleAgents
         private int count = 0;
         private character Character { get; set; }
 
-        private List<List<double>> vehicleSight;
+        private List<List<double>> visibleMap;
 
         #region public Fields 
         public enum side

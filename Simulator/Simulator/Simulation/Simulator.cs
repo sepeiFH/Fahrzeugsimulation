@@ -9,6 +9,7 @@ using Simulator.Simulation.Base;
 using TiledSharp;
 using static Simulator.Simulation.Base.Vehicle;
 using Simulator.Simulation.Utilities;
+using Simulator.VehicleAgents;
 
 namespace Simulator.Simulation
 {
@@ -195,10 +196,10 @@ namespace Simulator.Simulation
         #endregion
 
         #region vehicle interaction
-        /*
-        public void getMapInfo(double vehicleX, double vehicleY, side vehicleSide, int vehicleRange)
+        
+        public void getMapInfo(double vehicleX, double vehicleY, VehicleMovementAgent.side vehicleSide, int vehicleRange)
         {
-        }*/
+        }
         #endregion
     }
 }
