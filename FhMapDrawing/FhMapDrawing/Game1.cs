@@ -3,11 +3,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using FhMapDrawing.Helper;
 using FhMapDrawing.ServiceReference1;
 using TiledSharp;
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace FhMapDrawing
 {
@@ -46,7 +50,6 @@ namespace FhMapDrawing
 
             graphics.PreferredBackBufferWidth = (int)(1800 * scale);
             graphics.PreferredBackBufferHeight = (int)(1250 * scale);
-            graphics.IsFullScreen = true;
             graphics.ApplyChanges();
             IsMouseVisible = true;
             base.Initialize();
@@ -128,6 +131,13 @@ namespace FhMapDrawing
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.F11))
+            {
+                graphics.IsFullScreen = !graphics.IsFullScreen;
+                graphics.ApplyChanges();
+            }
+                
 
             // TODO: Add your update logic here
 
@@ -324,15 +334,57 @@ namespace FhMapDrawing
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
                 //TODO: print Disconnected message
                 //spriteBatch.DrawString(new SpriteFont(), "Disconnected", new Vector2(0,0), Color.Red)
+                Bitmap bitmap = new Bitmap(400, 100, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    graphics.DrawString("Disconnected", new Font("Tahoma", 14), Brushes.Red, new PointF(0,0));
+                }
+
+                spriteBatch.Draw(GetTexture(GraphicsDevice, bitmap), Vector2.Zero);
             }
 
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
+
+        private Texture2D GetTexture(GraphicsDevice dev, System.Drawing.Bitmap bmp)
+        {
+            int[] imgData = new int[bmp.Width * bmp.Height];
+            Texture2D texture = new Texture2D(dev, bmp.Width, bmp.Height);
+
+            unsafe
+            {
+                // lock bitmap
+                System.Drawing.Imaging.BitmapData origdata =
+                    bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
+
+                uint* byteData = (uint*)origdata.Scan0;
+
+                // Switch bgra -> rgba
+                for (int i = 0; i < imgData.Length; i++)
+                {
+                    byteData[i] = (byteData[i] & 0x000000ff) << 16 | (byteData[i] & 0x0000FF00) | (byteData[i] & 0x00FF0000) >> 16 | (byteData[i] & 0xFF000000);
+                }
+
+                // copy data
+                System.Runtime.InteropServices.Marshal.Copy(origdata.Scan0, imgData, 0, bmp.Width * bmp.Height);
+
+                byteData = null;
+
+                // unlock bitmap
+                bmp.UnlockBits(origdata);
+            }
+
+            texture.SetData(imgData);
+
+            return texture;
+        }
+
     }
 }
