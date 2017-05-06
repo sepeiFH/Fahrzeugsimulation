@@ -3,10 +3,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using FhMapDrawing.Helper;
 using FhMapDrawing.ServiceReference1;
 using TiledSharp;
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace FhMapDrawing
 {
@@ -18,7 +23,7 @@ namespace FhMapDrawing
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         TmxMap map;
-        float scale = 0.5f;
+        float scale = 1f;
         private List<TilesInfo> tiles;
         private ServiceReference1.SimulatorServiceMapClient clientSimulator;
 
@@ -43,10 +48,10 @@ namespace FhMapDrawing
             graphics.IsFullScreen = true;
             graphics.ApplyChanges();*/
 
-            graphics.PreferredBackBufferWidth = 1920; 
-            graphics.PreferredBackBufferHeight = 800;  
+            graphics.PreferredBackBufferWidth = (int)(1800 * scale);
+            graphics.PreferredBackBufferHeight = (int)(1250 * scale);
             graphics.ApplyChanges();
-
+            IsMouseVisible = true;
             base.Initialize();
         }
 
@@ -73,10 +78,6 @@ namespace FhMapDrawing
                 fileStream.Dispose();
                 tiles.Add(new TilesInfo() { Tileset = tileset, TileWidth = tile.TileWidth, TileHeight = tile.TileHeight, TilesetTilesWide = tileset.Width / tile.TileWidth, TilesetTilesHigh = tileset.Height / tile.TileHeight, Name = tile.Image.Source });
             }
-
-            graphics.PreferredBackBufferWidth = 900;
-            graphics.PreferredBackBufferHeight = 600;
-            graphics.ApplyChanges();
 
             /*
             //Map
@@ -119,6 +120,8 @@ namespace FhMapDrawing
             // TODO: Unload any non ContentManager content here
         }
 
+        private MouseState oldState;
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -129,12 +132,45 @@ namespace FhMapDrawing
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.F11))
+            {
+                graphics.IsFullScreen = !graphics.IsFullScreen;
+                graphics.ApplyChanges();
+            }
+                
+
             // TODO: Add your update logic here
+
+            MouseState newState = Mouse.GetState();
+
+            if (newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released)
+            {
+                Point pos = new Point(newState.X, newState.Y);
+                double smallestDistance = 100;
+                BlockObjectContract tempItem = null;
+                foreach (BlockObjectContract item in currentItems.Where(x => x.GID > 999).ToList())
+                {
+                    double currentDistance = Utils.GetDistance(pos, new Point((int)item.X, (int)item.Y));
+                    if (currentDistance < smallestDistance)
+                    {
+                        tempItem = item;
+                        smallestDistance = currentDistance;
+                    }
+                }
+                if (tempItem != null)
+                {
+                    clientSimulator.ToggleBrokenItem(tempItem);
+                }
+            }
+
+            oldState = newState;
 
             base.Update(gameTime);
         }
 
         int count = 0;
+
+        private List<BlockObjectContract> currentItems;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -236,8 +272,8 @@ namespace FhMapDrawing
             }
             try
             {
-                var items = clientSimulator.GetDynamicObjects();
-                foreach (BlockObjectContract item in items)
+                currentItems = clientSimulator.GetDynamicObjects().ToList();
+                foreach (BlockObjectContract item in currentItems)
                 {
                     if (item.GID < 100)
                     {
@@ -298,15 +334,57 @@ namespace FhMapDrawing
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
                 //TODO: print Disconnected message
                 //spriteBatch.DrawString(new SpriteFont(), "Disconnected", new Vector2(0,0), Color.Red)
+                Bitmap bitmap = new Bitmap(400, 100, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    graphics.DrawString("Disconnected", new Font("Tahoma", 14), Brushes.Red, new PointF(0,0));
+                }
+
+                spriteBatch.Draw(GetTexture(GraphicsDevice, bitmap), Vector2.Zero);
             }
 
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
+
+        private Texture2D GetTexture(GraphicsDevice dev, System.Drawing.Bitmap bmp)
+        {
+            int[] imgData = new int[bmp.Width * bmp.Height];
+            Texture2D texture = new Texture2D(dev, bmp.Width, bmp.Height);
+
+            unsafe
+            {
+                // lock bitmap
+                System.Drawing.Imaging.BitmapData origdata =
+                    bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bmp.PixelFormat);
+
+                uint* byteData = (uint*)origdata.Scan0;
+
+                // Switch bgra -> rgba
+                for (int i = 0; i < imgData.Length; i++)
+                {
+                    byteData[i] = (byteData[i] & 0x000000ff) << 16 | (byteData[i] & 0x0000FF00) | (byteData[i] & 0x00FF0000) >> 16 | (byteData[i] & 0xFF000000);
+                }
+
+                // copy data
+                System.Runtime.InteropServices.Marshal.Copy(origdata.Scan0, imgData, 0, bmp.Width * bmp.Height);
+
+                byteData = null;
+
+                // unlock bitmap
+                bmp.UnlockBits(origdata);
+            }
+
+            texture.SetData(imgData);
+
+            return texture;
+        }
+
     }
 }

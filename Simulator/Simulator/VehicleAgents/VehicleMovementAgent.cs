@@ -49,6 +49,8 @@ namespace Simulator.VehicleAgents
 
         public virtual void moveVehicle(Vehicle vehicle)
         {
+            if (vehicle.IsBroken)
+                return;
             double doublePixels = 5;
             if (count++ % 2 == 0)
             {

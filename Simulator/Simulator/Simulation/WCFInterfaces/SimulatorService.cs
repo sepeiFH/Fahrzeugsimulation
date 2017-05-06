@@ -7,6 +7,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using Simulator.Simulation.Base;
+using Simulator.Simulation.Utilities;
 
 namespace Simulator.Simulation.WCFInterfaces
 {
@@ -22,6 +23,9 @@ namespace Simulator.Simulation.WCFInterfaces
 
         [OperationContract]
         List<BlockObjectContract> GetDynamicObjects();
+
+        [OperationContract]
+        void ToggleBrokenItem(BlockObjectContract item);
 
         //[OperationContract]
         //List<RoadSign> getRoadSigns();
@@ -39,9 +43,14 @@ namespace Simulator.Simulation.WCFInterfaces
 
         public List<BlockObjectContract> GetDynamicObjects()
         {
-            return SimulatorServiceHelpder.GetDynamicObjects(simu);
+            return SimulatorServiceHelper.GetDynamicObjects(simu);
         }
-        
+
+        public void ToggleBrokenItem(BlockObjectContract item)
+        {
+            SimulatorServiceHelper.ToggleBroken(simu, item);
+        }
+
         public string GetTrafficInitData()
         {
             return trafficString;
@@ -49,11 +58,11 @@ namespace Simulator.Simulation.WCFInterfaces
 
         public List<TrafficLightGroupContract> GetTrafficLightGroups()
         {
-            return SimulatorServiceHelpder.GetTrafficLightGroups(simu);
+            return SimulatorServiceHelper.GetTrafficLightGroups(simu);
         }
         public void SetTrafficLightUpdate(List<TrafficLightContract> trafficlightList)
         {
-            SimulatorServiceHelpder.SetTrafficLightUpdate(simu, trafficlightList);
+            SimulatorServiceHelper.SetTrafficLightUpdate(simu, trafficlightList);
         }
         /*public List<RoadSign> getRoadSigns()
 {
@@ -82,7 +91,7 @@ namespace Simulator.Simulation.WCFInterfaces
 
     #region HelperClasses
 
-    public class SimulatorServiceHelpder
+    public class SimulatorServiceHelper
     {
         public static List<BlockObjectContract> GetDynamicObjects(Simulator simu)
         {
@@ -128,6 +137,23 @@ namespace Simulator.Simulation.WCFInterfaces
             catch (Exception e) { }
 
             return tempGroupList;
+        }
+
+        public static void ToggleBroken(Simulator simu, BlockObjectContract item)
+        {
+            double smallestDistance = Double.MaxValue;
+            DynamicBlock tempItem = null;
+            foreach (DynamicBlock currentItem in simu.allDynamicObjects.Where(x => x.GID == item.GID))
+            {
+                double currentDistance = Utils.GetDistance(currentItem.X, currentItem.Y, item.X, item.Y);
+                if (currentDistance < smallestDistance)
+                {
+                    tempItem = currentItem;
+                    smallestDistance = currentDistance;
+                }
+            }
+            if (tempItem != null)
+                tempItem.IsBroken = !tempItem.IsBroken;
         }
 
         public static void SetTrafficLightUpdate(Simulator simu, List<TrafficLightContract> trafficlightList)

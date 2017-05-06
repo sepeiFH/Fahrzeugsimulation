@@ -14,6 +14,7 @@ namespace Simulator.Simulation.Base
         public override double Rotation { get; set; }
         public override int GID { get; set; }
         public override int ID { get; set; }
+        public override bool IsBroken { get; set; }
         private VehicleMovementAgent driver;
 
         public enum VehicleList
@@ -26,8 +27,9 @@ namespace Simulator.Simulation.Base
         }
         public Vehicle()
         {
+            IsBroken = false;
         }
-        public Vehicle(Random rand,int gid)
+        public Vehicle(Random rand,int gid) : base()
         {
             this.GID = gid;
             switch (GID)

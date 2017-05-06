@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Simulator.Simulation.WCFInterfaces" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Simulator.Simulation.WCFInterfaces" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:1667/Simulator?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:complexType name="ArrayOfBlockObjectContract">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="BlockObjectContract" nillable="true" type="tns:BlockObjectContract" />
@@ -15,4 +16,86 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="BlockObjectContract" nillable="true" type="tns:BlockObjectContract" />
+  <xs:complexType name="ArrayOfTrafficLightGroupContract">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TrafficLightGroupContract" nillable="true" type="tns:TrafficLightGroupContract" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTrafficLightGroupContract" nillable="true" type="tns:ArrayOfTrafficLightGroupContract" />
+  <xs:complexType name="TrafficLightGroupContract">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ID" type="xs:int" />
+      <xs:element minOccurs="0" name="TrafficLights" nillable="true" type="tns:ArrayOfTrafficLightContract" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TrafficLightGroupContract" nillable="true" type="tns:TrafficLightGroupContract" />
+  <xs:complexType name="ArrayOfTrafficLightContract">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TrafficLightContract" nillable="true" type="tns:TrafficLightContract" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTrafficLightContract" nillable="true" type="tns:ArrayOfTrafficLightContract" />
+  <xs:complexType name="TrafficLightContract">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Direction" type="tns:TrafficLightDirection" />
+      <xs:element minOccurs="0" name="ID" type="xs:int" />
+      <xs:element minOccurs="0" name="Neighbor" nillable="true" type="tns:TrafficLightContract" />
+      <xs:element minOccurs="0" name="PosX" type="xs:double" />
+      <xs:element minOccurs="0" name="PosY" type="xs:double" />
+      <xs:element minOccurs="0" name="Position" type="tns:TrafficLightPosition" />
+      <xs:element minOccurs="0" name="Status" type="tns:TrafficLightStatus" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TrafficLightContract" nillable="true" type="tns:TrafficLightContract" />
+  <xs:simpleType name="TrafficLightDirection">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="All" />
+      <xs:enumeration value="Straight" />
+      <xs:enumeration value="Right" />
+      <xs:enumeration value="Left" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TrafficLightDirection" nillable="true" type="tns:TrafficLightDirection" />
+  <xs:simpleType name="TrafficLightPosition">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Top" />
+      <xs:enumeration value="Bottom" />
+      <xs:enumeration value="Left" />
+      <xs:enumeration value="Right" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TrafficLightPosition" nillable="true" type="tns:TrafficLightPosition" />
+  <xs:simpleType name="TrafficLightStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Red">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">12</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Yellow">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">13</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Green">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">14</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="YellowRed">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">15</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TrafficLightStatus" nillable="true" type="tns:TrafficLightStatus" />
 </xs:schema>
