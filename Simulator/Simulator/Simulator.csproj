@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
@@ -63,6 +64,7 @@
     <Compile Include="Simulation\BlockMapping.cs" />
     <Compile Include="Simulation\Simulator.cs" />
     <Compile Include="Simulation\Utilities\StopWatchWithOffset.cs" />
+    <Compile Include="Simulation\Utilities\Utils.cs" />
     <Compile Include="Simulation\WCFInterfaces\SimulatorService.cs" />
     <Compile Include="VehicleAgents\CarMovementAgent.cs" />
     <Compile Include="VehicleAgents\MotorCycleMovementAgent.cs" />

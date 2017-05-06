@@ -15,6 +15,8 @@ namespace Simulator.Simulation.Base
         public abstract int GID { get; set; }
         public abstract int ID { get; set; }
 
+        public abstract bool IsBroken { get; set; }
+
         public abstract void update();
     }
 }

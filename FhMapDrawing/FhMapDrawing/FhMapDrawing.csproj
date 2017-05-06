@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="Game1.cs" />
     <Compile Include="Helper\TilesInfo.cs" />
+    <Compile Include="Helper\Utils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -67,6 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Connected Services\ServiceReference1\FhMapDrawing.ServiceReference1.BlockObjectContract.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\ServiceReference1\FhMapDrawing.ServiceReference1.TrafficLightGroupContract.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Connected Services\ServiceReference1\Simulator.disco" />
