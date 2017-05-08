@@ -15,6 +15,7 @@ namespace Simulator.Simulation.Utilities
 
     public class SimulationConfig
     {
+        public int SpawnTimeFrame { get; set; }
         public int EmergencyTime { get; set; }
         public int Takt { get; set; }
         public String BaseUrl { get; set; }
