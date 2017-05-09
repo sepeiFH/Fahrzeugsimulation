@@ -25,6 +25,7 @@ namespace Simulator.Simulation.Base
         }
 
         public override int ID { get; set; }
+        public override bool IsBroken { get; set; }
 
         public RoadSign()
         {

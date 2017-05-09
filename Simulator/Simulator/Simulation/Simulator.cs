@@ -9,6 +9,7 @@ using Simulator.Simulation.Base;
 using TiledSharp;
 using static Simulator.Simulation.Base.Vehicle;
 using Simulator.Simulation.Utilities;
+using Simulator.VehicleAgents;
 
 namespace Simulator.Simulation
 {
@@ -17,6 +18,8 @@ namespace Simulator.Simulation
         #region Fields
         public int RefreshesPerSecond = 50;
         public int EmergencySeconds = 10;
+        private int spawningTicks;
+        private int tickCountToSpawn;
         private readonly TimeSpan SimulatorSpeed;
         private readonly TimeSpan EmergencyTime;
         private Stopwatch stopWatch;
@@ -28,6 +31,7 @@ namespace Simulator.Simulation
         Random rand = new Random();
         private int idCount = 0;
         public TmxMap map;
+        private List<List<int>> Streetmap;
         //public List<RoadSign> allRoadSigns;
         //public List<Vehicle> allVehicles;
 
@@ -62,9 +66,11 @@ namespace Simulator.Simulation
 
         #region Init
         public void init(SimulationConfig settings)
-        {
+        { 
             RefreshesPerSecond = settings.Takt;
             EmergencySeconds = settings.EmergencyTime;
+            spawningTicks = RefreshesPerSecond * settings.SpawnTimeFrame;
+            tickCountToSpawn = spawningTicks/ settings.Fahrzeuge.Sum(x => x.SpawnRate);
             map = new TmxMap(mapString, true);
             initSpawningList();
             BlockMapping.Blocks.Count();
@@ -122,17 +128,33 @@ namespace Simulator.Simulation
             stopWatch = new Stopwatch();
             emergencyWatch = new Stopwatch();
             stopWatch.Start();
+            int tickCount=0;
+            List<int> spawningList = new List<int>();
             while (true)
             {
                 if (stopWatch.Elapsed > SimulatorSpeed)
                 {
-                    spawnVehicle();
                     List<DynamicBlock> removeObjects = new List<DynamicBlock>();
                     if (emergencyWatch.Elapsed > EmergencyTime)
                     {
                         EmergencyModeActive = true;
                         emergencyWatch.Stop();
                     }
+                    if (tickCount == 0)
+                    {
+                        spawningList.Clear();
+
+                        foreach (var vehicle in Program.settings.Fahrzeuge)
+                            for(int i=0; i < vehicle.SpawnRate; i++)
+                                spawningList.Add(vehicle.GID);
+                        tickCount++;
+                    }
+                    else if (tickCount++ % tickCountToSpawn == 0)
+                        spawnVehicle(spawningList);
+
+                    else if (tickCount >= spawningTicks)
+                        tickCount = 0;
+
                     foreach (DynamicBlock dynObject in allDynamicObjects)
                     {
                         dynObject.update();
@@ -157,36 +179,27 @@ namespace Simulator.Simulation
             }
         }
 
-        private void spawnVehicle()
+        private void spawnVehicle(List<int> spawningList)
         {
-            int num = rand.Next(1, 100);
-            bool doSpawn = true;
-            if (doSpawn)
-            {
-                int spawnrate = Program.settings.Fahrzeuge[0].SpawnRate;
-                if (num <= spawnrate)
-                    setVehicle(Program.settings.Fahrzeuge[0].GID);
-                else if (num <= (spawnrate += Program.settings.Fahrzeuge[1].SpawnRate))
-                    setVehicle(Program.settings.Fahrzeuge[1].GID);
-                else if (num <= (spawnrate += Program.settings.Fahrzeuge[2].SpawnRate))
-                    setVehicle(Program.settings.Fahrzeuge[2].GID);
-                else if (num <= (spawnrate += Program.settings.Fahrzeuge[3].SpawnRate))
-                    setVehicle(Program.settings.Fahrzeuge[3].GID);
-                else if (num <= (spawnrate += Program.settings.Fahrzeuge[4].SpawnRate))
-                    setVehicle(Program.settings.Fahrzeuge[4].GID);
-            }
-            //else if (num < Program.settings.Fahrzeuge[0].SpawnRate + Program.settings.Fahrzeuge[1].SpawnRate)
-            //setVehicle(1002);
+            int num = rand.Next(0, spawningList.Count-1);
+            setVehicle(spawningList[num]);
+            spawningList.RemoveAt(num);
         }
 
         private void setVehicle(int tempGID)
         { 
             int randNum = rand.Next(1, spawningPoints.Count());
             Coordiantes coordinates = spawningPoints[randNum-1];
-            Vehicle vehicle = new Vehicle() { GID = tempGID, Rotation = coordinates.Rotation, X = coordinates.X, Y = coordinates.Y};
+            Vehicle vehicle = new Vehicle(rand, tempGID) { Rotation = coordinates.Rotation, X = coordinates.X, Y = coordinates.Y};
             allDynamicObjects.Add(vehicle);
         }
+        #endregion
 
+        #region vehicle interaction
+        
+        public void getMapInfo(double vehicleX, double vehicleY, VehicleMovementAgent.side vehicleSide, int vehicleRange)
+        {
+        }
         #endregion
     }
 }
