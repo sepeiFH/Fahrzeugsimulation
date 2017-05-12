@@ -3,9 +3,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.ServiceModel.Configuration;
 using FhMapDrawing.Helper;
 using FhMapDrawing.ServiceReference1;
 using TiledSharp;
@@ -52,6 +55,17 @@ namespace FhMapDrawing
             graphics.PreferredBackBufferHeight = (int)(1250 * scale);
             graphics.ApplyChanges();
             IsMouseVisible = true;
+
+            var serviceModelClientConfigSection = ConfigurationManager.GetSection("system.serviceModel/client") as ClientSection;
+            foreach (ChannelEndpointElement endpoint in serviceModelClientConfigSection.Endpoints)
+            {
+                if (endpoint.Name == "BasicHttpBinding_SimulatorServiceMap")
+                {
+                    this.endpoint = endpoint.Address.ToString();
+                    break;
+                }
+            }
+
             base.Initialize();
         }
 
@@ -170,7 +184,9 @@ namespace FhMapDrawing
 
         int count = 0;
 
+        private string endpoint;
         private List<BlockObjectContract> currentItems;
+        private bool disconnected = false;
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -178,6 +194,21 @@ namespace FhMapDrawing
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            if (disconnected)
+            {
+                WebClient client = new WebClient();
+                try
+                {
+                    var request = (HttpWebRequest)WebRequest.Create(endpoint);
+                    var response = (HttpWebResponse)request.GetResponse();
+                    if (response.StatusCode == HttpStatusCode.OK) disconnected = false; else return;
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+                
+            }
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
@@ -336,14 +367,11 @@ namespace FhMapDrawing
             }
             catch
             {
-                //TODO: print Disconnected message
-                //spriteBatch.DrawString(new SpriteFont(), "Disconnected", new Vector2(0,0), Color.Red)
+                disconnected = true;
                 Bitmap bitmap = new Bitmap(400, 100, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
                 using (var graphics = Graphics.FromImage(bitmap))
-                {
                     graphics.DrawString("Disconnected", new Font("Tahoma", 14), Brushes.Red, new PointF(0,0));
-                }
 
                 spriteBatch.Draw(GetTexture(GraphicsDevice, bitmap), Vector2.Zero);
             }
