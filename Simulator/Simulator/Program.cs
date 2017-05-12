@@ -22,7 +22,7 @@ namespace Simulator
         {
             Uri baseAddress = new Uri(settings.BaseUrl);
 
-            Simulation.Simulator simu = new Simulation.Simulator();
+            Simulation.Simulator simu = Simulation.Simulator.Instance;
             simu.init(settings);
             simu.GetSimulatorThread().Start();
             SimulatorService.mapString = simu.mapString;

@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace Simulator.Simulation.Utilities
 {
-    public class Fahrzeug
+    public class ConfigVehicle
     {
+        public double MaxVelocity { get; set; }
+        public double MaxAcceleration { get; set; }
+        public double MaxDeceleration { get; set; }
+        public double Height { get; set; }
+        public double Width { get; set; }
         public string Type { get; set; }
         public int SpawnRate { get; set; }
         public int GID { get; set; }
@@ -19,7 +24,7 @@ namespace Simulator.Simulation.Utilities
         public int EmergencyTime { get; set; }
         public int Takt { get; set; }
         public String BaseUrl { get; set; }
-        public List<Fahrzeug> Fahrzeuge { get; set; }
+        public List<ConfigVehicle> Vehicles { get; set; }
     }
 
     class CrossingConfig

@@ -1,12 +1,8 @@
-﻿using System;
+﻿using Simulator.Simulation.Base;
+using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using Simulator.Simulation.Base;
 
 namespace Simulator.Simulation
 {
@@ -31,7 +27,7 @@ namespace Simulator.Simulation
 
         static BlockMapping()
         {
-                Blocks = ReflectiveEnumerator.GetEnumerableOfType<Block>().ToList();
+            Blocks = ReflectiveEnumerator.GetEnumerableOfType<Block>().ToList();
         }
 
     }
@@ -52,7 +48,7 @@ namespace Simulator.Simulation
     {
         public BlockStreetLeftToRight()
         {
-            GID = 3;
+            GID = 4;
             Type = BlockType.StaticBlock;
             Direction = StreetDirection.LeftToRight;
         }
@@ -63,7 +59,7 @@ namespace Simulator.Simulation
     {
         public BlockStreetRightToLeft()
         {
-            GID = 4;
+            GID = 3;
             Type = BlockType.StaticBlock;
             Direction = StreetDirection.RightToLeft;
         }
@@ -81,9 +77,9 @@ namespace Simulator.Simulation
     }
 
 
-    public class BlockStreetDownToTop : StreetBlock
+    public class BlockStreetBottomToTop : StreetBlock
     {
-        public BlockStreetDownToTop()
+        public BlockStreetBottomToTop()
         {
             GID = 6;
             Type = BlockType.StaticBlock;
@@ -98,6 +94,7 @@ namespace Simulator.Simulation
         {
             GID = 7;
             Type = BlockType.StaticBlock;
+            Direction = StreetDirection.Crossing;
         }
     }
 

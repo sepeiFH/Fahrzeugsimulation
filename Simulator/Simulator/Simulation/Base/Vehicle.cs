@@ -16,6 +16,8 @@ namespace Simulator.Simulation.Base
         public override int ID { get; set; }
         public override bool IsBroken { get; set; }
         private VehicleMovementAgent driver;
+        public double Width { get; set; }
+        public double Height { get; set; }
 
         public enum VehicleList
         {
@@ -29,7 +31,7 @@ namespace Simulator.Simulation.Base
         {
             IsBroken = false;
         }
-        public Vehicle(Random rand,int gid) : base()
+        public Vehicle(Random rand,int gid, double rawVelocity, double rawAccerleration, double rawDeceleration) : base()
         {
             this.GID = gid;
             switch (GID)
@@ -50,12 +52,15 @@ namespace Simulator.Simulation.Base
                     driver = new MotorCycleMovementAgent(rand);
                     break;
             }
-        }
 
-        private Dictionary<VehicleList, int> vehicleLengths = new Dictionary<VehicleList, int>() { { VehicleList.Truck1, 60 }, { VehicleList.Car1, 32 } };
+            driver.MaxVelocity = rawVelocity / Program.settings.Takt;
+            driver.MaxAcceleration = rawAccerleration / Program.settings.Takt;
+            driver.MaxDeceleration = rawDeceleration / Program.settings.Takt;
+        }
+        
         public override void update()
         {
-            driver.moveVehicle(this);
+            driver.act(this);
         }
     }
 }

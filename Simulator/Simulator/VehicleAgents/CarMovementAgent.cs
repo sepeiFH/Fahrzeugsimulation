@@ -11,7 +11,8 @@ namespace Simulator.VehicleAgents
         public CarMovementAgent(Random rand) : base (rand)
         {
         }
-        /*public override void moveVehicle()
+
+        /*public override void loadMap(double X, double Y)
         {
             throw new NotImplementedException();
         }*/
