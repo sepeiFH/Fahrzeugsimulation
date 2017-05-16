@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,12 +34,18 @@ namespace Traffic_control.Trafficcontrol
 
         #region Agent Thread
 
+        /// <summary>
+        /// Creates the traffic agent task from Task Factory
+        /// </summary>
         public Task GetTrafficAgentTask()
         {
             token = new CancellationTokenSource();
             return Task.Factory.StartNew(() => TickLogic(token.Token));
         }
 
+        /// <summary>
+        /// Starts the traffic agent task
+        /// </summary>
         public void StartTrafficAgent()
         {
             if (logicTask == null)
@@ -52,6 +54,9 @@ namespace Traffic_control.Trafficcontrol
             }
         }
 
+        /// <summary>
+        /// Stops the traffic agent task
+        /// </summary>
         public void StopTrafficAgent()
         {
             if (logicTask != null)
@@ -65,6 +70,12 @@ namespace Traffic_control.Trafficcontrol
 
         #region Agent Ticks
 
+        /// <summary>
+        /// Query the initial data of the simulation interface (map, config(TODO))
+        /// Starts a Stopwatch for the clock, so that there is the given amount of ticks within a second.
+        /// Also calls the update method of all traffic light objects and send the updated objects to the simulation.
+        /// </summary>
+        /// <param name="cancelToken">Token which tells the working loop that the program should stop</param>
         private void TickLogic(CancellationToken cancelToken)
         {
             stopWatch = new Stopwatch();
@@ -102,11 +113,15 @@ namespace Traffic_control.Trafficcontrol
                 {
                     Task.Delay(10);
                 }
-                
+
             }
 
         }
 
+        /// <summary>
+        /// Convert the status of the traffic lights from the interface type into the internal type
+        /// </summary>
+        /// <param name="status">light status to be converted (from interface type to internal type)</param>
         private TrafficLight.LightStatus convertLightStatus(ServiceReference1.TrafficLightStatus status)
         {
             TrafficLight.LightStatus newStatus;
@@ -122,6 +137,11 @@ namespace Traffic_control.Trafficcontrol
 
             return newStatus;
         }
+
+        /// <summary>
+        /// Convert the status of the traffic lights from the internal type into the interface type
+        /// </summary>
+        /// <param name="status">light status to be converted (from internal type to interface type)</param>
         private ServiceReference1.TrafficLightStatus convertLightStatus(TrafficLight.LightStatus status)
         {
             ServiceReference1.TrafficLightStatus newStatus;
@@ -137,6 +157,11 @@ namespace Traffic_control.Trafficcontrol
 
             return newStatus;
         }
+
+        /// <summary>
+        /// Convert the position of the traffic lights from the interface type into the internal type
+        /// </summary>
+        /// <param name="oldPosition">light position to be converted (from interface type to internal type)</param>
         private TrafficLightGroup.Position convertLightPosition(ServiceReference1.TrafficLightPosition oldPosition)
         {
             TrafficLightGroup.Position newPosition;
@@ -152,6 +177,9 @@ namespace Traffic_control.Trafficcontrol
             return newPosition;
         }
 
+        /// <summary>
+        /// Convert the internal traffic lights into traffic lights of the interface type and PUSH the traffic lights via the interface to the simulation
+        /// </summary>
         public void SetUpdatedTrafficLightData()
         {
             List<ServiceReference1.TrafficLightContract> simulationTrafficLights = new List<ServiceReference1.TrafficLightContract>();
@@ -165,6 +193,10 @@ namespace Traffic_control.Trafficcontrol
             clientSimulator.SetTrafficLightUpdate(simulationTrafficLights.ToArray());
         }
 
+        /// <summary>
+        /// PULL the traffic lights from the simulation interface and convert them into internal traffic lights
+        /// TODO: also PULL the config data
+        /// </summary>
         public void GetTrafficLightData()
         {
             var groups = clientSimulator.GetTrafficLightGroups();
@@ -184,24 +216,6 @@ namespace Traffic_control.Trafficcontrol
 
                 trafficLightGroups.Add(tempGroup);
             }
-            /*var groups = clientSimulator.GetTrafficLightGroups();
-            trafficLights = new List<TrafficLight>();
-            foreach (var group in groups)
-            {
-                foreach(var light in group.TrafficLights)
-                    trafficLights.Add(new TrafficLight(convertLightStatus(light.Status), group.ID, light.ID, TrafficLight.StreetDirection.All));
-            }*/
-            /*
-            trafficLights = new List<TrafficLight>()
-            {
-                new TrafficLight(TrafficLight.LightStatus.Red, 1, 1, new Point(0, 16)),
-                new TrafficLight(TrafficLight.LightStatus.Red, 1, 2, new Point(16, 32)),
-                new TrafficLight(TrafficLight.LightStatus.Red, 1, 3, new Point(32, 16)),
-                new TrafficLight(TrafficLight.LightStatus.Red, 1, 4, new Point(16, 0)),
-                new TrafficLight(TrafficLight.LightStatus.Red, 2, 5, new Point(-1, -1)),
-                //new TrafficLight(TrafficLight.LightStatus.Red, 2, 6),
-                //new TrafficLight(TrafficLight.LightStatus.Red, 2, 7)
-            };*/
         }
 
         #endregion Agent Ticks

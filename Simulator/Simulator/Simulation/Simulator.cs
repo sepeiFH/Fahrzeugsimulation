@@ -31,6 +31,7 @@ namespace Simulator.Simulation
         }
         #endregion
         #region Fields
+        public static List<Vehicle> vehiclesToAdd = new List<Vehicle>();
         public int RefreshesPerSecond = Program.settings.Takt;
         public int EmergencySeconds = Program.settings.EmergencyTime;
         private int spawningTicks;
@@ -64,6 +65,7 @@ namespace Simulator.Simulation
             public double Y { get; set; }
             public double Rotation { get; set; }
         }
+
         #endregion
 
         #region Constructor
@@ -225,13 +227,13 @@ namespace Simulator.Simulation
             foreach (var element in map.Layers[0].Tiles)
             {
                 if (element.Gid == (int)StreetDirection.LeftToRight && element.X == 0)
-                    spawningPoints.Add(new Coordiantes { X = element.X * 32 - 64, Y = element.Y * 32, Rotation = 180 });
+                    spawningPoints.Add(new Coordiantes { X = element.X * 32 - 64, Y = element.Y * 32 + 16, Rotation = 180 });
                 else if (element.Gid == (int)StreetDirection.RightToLeft && element.X == map.Width - 1)
-                    spawningPoints.Add(new Coordiantes { X = element.X * 32 + 96, Y = element.Y * 32 + 32, Rotation = 0 });
+                    spawningPoints.Add(new Coordiantes { X = element.X * 32 + 96, Y = element.Y * 32 + 16, Rotation = 0 });
                 else if (element.Gid == (int)StreetDirection.TopToBottom && element.Y == 0)
-                    spawningPoints.Add(new Coordiantes { X = element.X * 32 + 32, Y = element.Y * 32 - 64, Rotation = 270 });
+                    spawningPoints.Add(new Coordiantes { X = element.X * 32 + 16, Y = element.Y * 32 - 64, Rotation = 270 });
                 else if (element.Gid == (int)StreetDirection.BottomToTop && element.Y == map.Height - 1)
-                    spawningPoints.Add(new Coordiantes { X = element.X * 32, Y = element.Y * 32 + 64, Rotation = 90 });
+                    spawningPoints.Add(new Coordiantes { X = element.X * 32 + 16, Y = element.Y * 32 + 64, Rotation = 90 });
             }
         }
         #endregion
@@ -248,6 +250,9 @@ namespace Simulator.Simulation
             {
                 if (stopWatch.Elapsed > SimulatorSpeed)
                 {
+                    foreach (var addVehicle in vehiclesToAdd)
+                        allDynamicObjects.Add(addVehicle);
+                    vehiclesToAdd.Clear();
                     List<DynamicBlock> removeObjects = new List<DynamicBlock>();
                     if (emergencyWatch.Elapsed > EmergencyTime)
                     {
@@ -277,7 +282,13 @@ namespace Simulator.Simulation
                     }
 
                     foreach (DynamicBlock remObject in removeObjects)
-                        allDynamicObjects.Remove(allDynamicObjects.Find(x => x == remObject));
+                    {
+                        allDynamicObjects.Remove(remObject);
+                        /*if (allDynamicObjects.Remove(remObject))
+                        {
+                            removeObjects.Remove(removeObjects.Find(x => x == remObject));
+                        }*/
+                    }
                     //Update All Cars
                     /*foreach (Vehicle vehicle in allVehicles)
                         vehicle.update();
@@ -322,12 +333,15 @@ namespace Simulator.Simulation
         }
 
         // first try: Get a new created map out of the tile-map
-        public List<List<StreetBlock>> getMapInfo(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances, ref int actPosInMapListX, ref int actPosInMapListY)
+        public List<List<StreetBlock>> getMapInfo(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances, ref int actPosInMapListX, ref int actPosInMapListY, ref int actoffsetX, ref int actoffsetY)
         {
             List<List<StreetBlock>> vehiclesMap = new List<List<StreetBlock>>();
             // find block in which the vehicle is
-            int xBlock = (int)vehicleX / map.TileWidth;
-            int yBlock = (int)vehicleY / map.TileHeight;
+
+            int xBlock = (int)Math.Round(vehicleX / (double)map.TileWidth);
+            int yBlock = (int)Math.Round(vehicleY / (double)map.TileHeight) - 1;
+            actoffsetX = (int)vehicleX % 32;
+            actoffsetY = (int)vehicleY % 32;
 
             List<TmxLayerTile> tiles = new List<TmxLayerTile>();
 
@@ -384,16 +398,16 @@ namespace Simulator.Simulation
                     }
                 }
 
-
                 for (int i = tiles.Count - 1; i >= 0; i--)
                 {
                     if (tiles[i].X == xBlock && tiles[i].Y == yBlock)
                     {
-                        actPosInMapListY = i % vehiclesMap.Count;
-                        actPosInMapListX = vehiclesMap[i % vehiclesMap.Count].Count;
+                        actPosInMapListX = i % vehiclesMap.Count;
+                        actPosInMapListY = vehiclesMap[i % vehiclesMap.Count].Count;
                     }
                     vehiclesMap[i % vehiclesMap.Count].Add(addStreetBlock(tiles[i].Gid, tiles[i].X, tiles[i].Y));
                 }
+
             }
             // around 180 degree
             else if (rotation >= 135 && rotation < 225)
@@ -415,8 +429,8 @@ namespace Simulator.Simulation
                     }
                     if (tile.X == xBlock && tile.Y == yBlock)
                     {
-                        actPosInMapListY = vehiclesMap.Count();
-                        actPosInMapListX = colums.Count();
+                        actPosInMapListY = vehiclesMap.Count() + 1;
+                        actPosInMapListX = colums.Count() - 2;
                     }
                     colums.Add(addStreetBlock(tile.Gid, tile.X, tile.Y));
                 }
@@ -444,8 +458,8 @@ namespace Simulator.Simulation
                 {
                     if (tiles[i].X == xBlock && tiles[i].Y == yBlock)
                     {
-                        actPosInMapListY = i % vehiclesMap.Count;
-                        actPosInMapListX = vehiclesMap[i % vehiclesMap.Count].Count;
+                        actPosInMapListX = i % vehiclesMap.Count;
+                        actPosInMapListY = vehiclesMap[i % vehiclesMap.Count].Count;
                     }
                     vehiclesMap[i % vehiclesMap.Count].Add(addStreetBlock(tiles[i].Gid, tiles[i].X, tiles[i].Y));
                 }
@@ -503,5 +517,7 @@ namespace Simulator.Simulation
             return vehiclesDynamicBlocks;
         }
         #endregion
+
+
     }
 }

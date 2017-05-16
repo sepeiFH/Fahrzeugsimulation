@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-using System.IO;
-using Simulator.Simulation;
-using Simulator.Simulation.Base;
+﻿using Simulator.Simulation.Base;
 using Simulator.Simulation.Utilities;
 using Simulator.Simulation.WCFInterfaces;
-using TiledSharp;
-using SimpleConfig;
+using System;
 using System.Configuration;
+using System.ServiceModel;
+using System.ServiceModel.Description;
 
 namespace Simulator
 {
@@ -45,11 +38,35 @@ namespace Simulator
 
                 Console.WriteLine("The service is ready at {0}", baseAddress);
                 Console.WriteLine("Press <Enter> to stop the service.");
-                Console.ReadLine();
+                Random rand = new Random();
+                while (true)
+                {
+                    string input = Console.ReadLine();
+                    string[] inputList = input.Split(';');
+                    int vehicleGID = int.Parse(inputList[0]);
+                    double maxVelocity = double.Parse(inputList[1]);
+                    double vehicleX = double.Parse(inputList[2]);
+                    double vehicleY = double.Parse(inputList[3]);
+                    double vehicleRotation = double.Parse(inputList[4]);
+                    createVehicle(rand, vehicleGID, maxVelocity, vehicleX, vehicleY, vehicleRotation);
+                }
 
                 // Close the ServiceHost.
                 host.Close();
             }
+        }
+        private static void createVehicle(Random rand, int vehicleGID, double maxVelocity, double vehicleX, double vehicleY, double vehicleRotation)
+        {
+            ConfigVehicle tempVehicle = Program.settings.Vehicles.Find(x => x.GID == vehicleGID);
+            Vehicle vehicle = new Vehicle(rand, vehicleGID, maxVelocity, tempVehicle.MaxAcceleration, tempVehicle.MaxDeceleration)
+            {
+                Rotation = vehicleRotation,
+                X = vehicleX,
+                Y = vehicleY,
+                Height = tempVehicle.Height,
+                Width = tempVehicle.Width
+            };
+            Simulator.Simulation.Simulator.vehiclesToAdd.Add(vehicle);
         }
     }
 }

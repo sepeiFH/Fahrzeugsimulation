@@ -15,10 +15,13 @@ namespace Simulator.VehicleAgents
         public double ActAcceleration { get; set; }
         private bool debug = false;
         Dictionary<side, int> mapFieldsInDirection;
+        private int degreesToRotate = 0;
+        private CrossingDirection nextMove = CrossingDirection.None;
 
         public int vehicleMapPositionX { get; set; }
         public int vehicleMapPositionY { get; set; }
         private int count = 0;
+        private Random rand;
 
         private character Character { get; set; }
 
@@ -45,7 +48,7 @@ namespace Simulator.VehicleAgents
         #region Constructor
         public VehicleMovementAgent(Random rand)
         {
-
+            this.rand = rand;
             Array chars = Enum.GetValues(typeof(character));
             Character = (character)chars.GetValue(rand.Next(chars.Length));
         }
@@ -56,36 +59,113 @@ namespace Simulator.VehicleAgents
         {
             int actPosInMapListX = -1;
             int actPosInMapListY = -1;
-            List<List<StreetBlock>> vehiclesStreetMap = loadMap(vehicle.X, vehicle.Y, vehicle.Rotation, ref actPosInMapListX, ref actPosInMapListY);
+            int actOffsetX = -1;
+            int actOffsetY = -1;
+            List<List<StreetBlock>> vehiclesStreetMap = loadMap(vehicle.X, vehicle.Y, vehicle.Rotation, ref actPosInMapListX, ref actPosInMapListY, ref actOffsetX, ref actOffsetY);
             //side destinationSide = routeDecision();
-            moveVehicle(vehicle, vehiclesStreetMap, actPosInMapListX, actPosInMapListY);
+            moveVehicle(vehicle, vehiclesStreetMap, actPosInMapListX, actPosInMapListY, actOffsetX, actOffsetY);
         }
 
         #region vehicle interaction
-        public virtual void moveVehicle(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, int actPosInMapListX, int actPosInMapListY)
+        public virtual void moveVehicle(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, int actPosInMapListX, int actPosInMapListY, int actOffsetX, int actOffsetY)
         {
             double newX = vehicle.X;
             double newY = vehicle.Y;
 
-            StreetBlock actBlock = null;
-            StreetBlock frontOfVehicle = null;
+            CrossingBlock crossingAhead = null;
+            StreetBlock lastBlock = null;
+            StreetBlock actualBlock = null;
+            StreetBlock aheadBlock = null;
             // find vehicle in his map
-
             // If vehicle isn't on his own map, driver foreward to get into the simulationMap
-            if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX + 2)
-                frontOfVehicle = vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 2];
-            /* if (actPosInMapListX != -1 && frontOfVehicle != null)
-             {
-                 if (frontOfVehicle.Direction == StreetDirection.Crossing)
-                 {
-                 }
-             }
-             else
-             {*/
+            if (actPosInMapListX > 0)
+            {
+                if (degreesToRotate == 0 && actPosInMapListY >= 0 && actPosInMapListX - 1 >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
+                    lastBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX - 1];
+                if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
+                    actualBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX];
+                if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX + 1)
+                    aheadBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 1];
+                if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX + 3 && vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3] != null && vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3].GetType() == typeof(CrossingBlock))
+                    crossingAhead = (CrossingBlock)vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3];
+            }
+            if (crossingAhead != null && nextMove == CrossingDirection.None)
+            {
+                nextMove = crossingAhead.PossibleCrosDirs[rand.Next(crossingAhead.PossibleCrosDirs.Count - 1)];
+                if (nextMove == CrossingDirection.Left)
+                    degreesToRotate = -90;
+                else if (nextMove == CrossingDirection.Right)
+                    degreesToRotate = 90;
+            }
+            if (aheadBlock != null && actualBlock != null)
+            {
+                if (actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Right)
+                {
+                    //calcNewAccerleration(false, true, -1d);
+                }
+                if (actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left)
+                {
+                    //calcNewAccerleration(false, true, -1d);
+                }
+                if (lastBlock != null && lastBlock.Direction == StreetDirection.Crossing && actualBlock.Direction != StreetDirection.Crossing && nextMove == CrossingDirection.Straight)
+                {
+                    nextMove = CrossingDirection.None;
+                }
+
+                if (degreesToRotate > 0 && actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing)
+                {
+                    //MaxVelocity /= 6;
+                    vehicle.Rotation += 15;
+                    degreesToRotate -= 15;
+
+                    if (vehicle.Rotation == 360)
+                        vehicle.Rotation = 0;
+                }
+                else if (degreesToRotate < 0 && actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && actOffsetX >= 25)
+                {
+                    //MaxVelocity /= 6;
+                    if (vehicle.Rotation == 0)
+                        vehicle.Rotation = 360;
+
+                    vehicle.Rotation -= 15;
+                    degreesToRotate += 15;
+                }
+                //calcnewPosition(vehicle);
+                //calcNewVelocity();
+                //calcNewAccerleration(true, -1d);
+            }
+            if (degreesToRotate > 0 && degreesToRotate < 90)
+            {
+                if (vehicle.Rotation == 360)
+                    vehicle.Rotation = 0;
+
+                vehicle.Rotation += 15;
+                degreesToRotate -= 15;
+
+                if (degreesToRotate == 0)
+                {
+                    nextMove = CrossingDirection.None;
+                    MaxVelocity *= 6;
+                }
+            }
+            else if (degreesToRotate < 0 && degreesToRotate > -90)
+            {
+                if (vehicle.Rotation == 0)
+                    vehicle.Rotation = 360;
+
+                vehicle.Rotation -= 15;
+                degreesToRotate += 15;
+                if (degreesToRotate == 0)
+                {
+                    nextMove = CrossingDirection.None;
+                    MaxVelocity *= 6;
+                }
+            }
+
             double roundSpeed = ActVelocity + ActAcceleration;
             if (vehicle.IsBroken)
                 return;
-            if (roundSpeed < MaxVelocity)
+            /*if (roundSpeed < MaxVelocity)
             {
                 ActVelocity = roundSpeed;
                 ActAcceleration = MaxAcceleration;
@@ -94,20 +174,12 @@ namespace Simulator.VehicleAgents
             {
                 ActVelocity = MaxVelocity;
                 ActAcceleration = 0;
-            }
-
-            double yy = vehicle.Y + ActVelocity;
-            double angle = (vehicle.Rotation + 90) % 360;
-
-            double radiants = angle * (Math.PI / 180.0d);
-            newX = (Math.Cos(radiants) * (double)(vehicle.X - vehicle.X) - Math.Sin(radiants) * (double)(yy - vehicle.Y) + vehicle.X);
-            newY = (Math.Sin(radiants) * (double)(vehicle.X - vehicle.X) + Math.Cos(radiants) * (double)(yy - vehicle.Y) + vehicle.Y);
-            //}
-            vehicle.X = newX;
-            vehicle.Y = newY;
+            }*/
+            calcnewPosition(vehicle);
+            calcNewVelocity();
         }
 
-        private void oldMove()
+        private void moveVehicle2(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, int actPosInMapListX, int actPosInMapListY, int actOffsetX, int actOffsetY)
         {
             /*
             if (vehicle.IsBroken)
@@ -115,11 +187,11 @@ namespace Simulator.VehicleAgents
             double doublePixels = 5;
             if (count++ % 2 == 0)
             {
-                vehicle.Rotation += 0.25;
+                vehicle.Rotation += .25;
                 count = 2;
             }
 
-           double yy = vehicle.Y + doublePixels;
+            double yy = vehicle.Y + doublePixels;
             double angle = (vehicle.Rotation + 90) % 360;
 
             double radiants = angle * (Math.PI / 180.0d);
@@ -127,26 +199,85 @@ namespace Simulator.VehicleAgents
             double newY = (Math.Sin(radiants) * (double)(vehicle.X - vehicle.X) + Math.Cos(radiants) * (double)(yy - vehicle.Y) + vehicle.Y);
 
             vehicle.X = newX;
-            vehicle.Y = newY;
-            */
+            vehicle.Y = newY;*/
         }
 
-        private double calcNewAccerleration(double actAcc, double maxAcc, bool isMaxVelocity)
+        private void calcnewPosition(Vehicle vehicle)
+        {
+            double newX = 0;
+            double newY = 0;
+
+            double yy = vehicle.Y + ActVelocity;
+
+            double angle = (vehicle.Rotation + 90) % 360;
+
+            double radiants = angle * (Math.PI / 180.0d);
+            newX = (Math.Cos(radiants) * (double)(vehicle.X - vehicle.X) - Math.Sin(radiants) * (double)(yy - vehicle.Y) + vehicle.X);
+            newY = (Math.Sin(radiants) * (double)(vehicle.X - vehicle.X) + Math.Cos(radiants) * (double)(yy - vehicle.Y) + vehicle.Y);
+
+            vehicle.X = newX;
+            vehicle.Y = newY;
+        }
+
+        private void calcNewVelocity()
+        {
+            double newVelocity = 0;
+
+            if (ActVelocity == MaxVelocity)
+                newVelocity = ActVelocity;
+            else if (ActVelocity > MaxVelocity)
+            {
+                newVelocity = ActVelocity + ActAcceleration;
+                calcNewAccerleration(false, true, -1d);
+            }
+            else if (ActVelocity + ActAcceleration <= MaxVelocity)
+            {
+                newVelocity = ActVelocity + ActAcceleration;
+                calcNewAccerleration(true, false, -1d);
+            }
+            else if (ActVelocity + ActAcceleration > MaxVelocity)
+                newVelocity = MaxVelocity;
+
+            ActVelocity = newVelocity;
+            calcNewAccerleration(true, false, -1d);
+        }
+
+        private void calcNewAccerleration(bool accelerate, bool decelerate, Double fieldsToBreak)
         {
             double newAcc = 0;
-            if (!isMaxVelocity && actAcc < maxAcc && Character == character.aggresive)
-                newAcc = actAcc + maxAcc;
-            else if (!isMaxVelocity && actAcc < maxAcc)
-                newAcc = actAcc + maxAcc - 1;
-            else if (!isMaxVelocity)
-                newAcc = actAcc;
+            if (accelerate)
+            {
+                if (MaxVelocity > ActVelocity && ActAcceleration < MaxAcceleration && Character == character.aggresive)
+                    newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration);
+                else if (MaxVelocity > ActVelocity && ActAcceleration < MaxAcceleration)
+                    if ((MaxAcceleration - ActAcceleration) - 1 >= 0)
+                        newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration) - 1;
+                    else
+                        newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration);
+                else if (MaxVelocity > ActVelocity)
+                    newAcc = ActAcceleration;
+            }
+            else if (decelerate)
+            {
+                if (ActVelocity > 0 && ActAcceleration > MaxDeceleration * -1 && Character == character.aggresive)
+                    newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration);
+                else if (ActVelocity > 0 && ActAcceleration > MaxDeceleration)
+                    if (MaxDeceleration + ActAcceleration - 1 >= 0)
+                        newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration) - 1;
+                    else
+                        newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration);
+                else if (ActVelocity > 0)
+                    newAcc = ActAcceleration;
+                else
+                    newAcc = 0;
+            }
 
-            return newAcc;
+            ActAcceleration = newAcc;
         }
         #endregion
         #region simulation interaction
 
-        public virtual List<List<StreetBlock>> loadMap(double X, double Y, double rotation, ref int actPosX, ref int actPosY)
+        public virtual List<List<StreetBlock>> loadMap(double X, double Y, double rotation, ref int actPosX, ref int actPosY, ref int actOffSetX, ref int actOffsetY)
         {
             if (mapFieldsInDirection == null)
             {
@@ -173,7 +304,7 @@ namespace Simulator.VehicleAgents
 
             Simulation.Simulator simu = Simulation.Simulator.Instance;
 
-            List<List<StreetBlock>> mapList = simu.getMapInfo(X, Y, rotation, mapFieldsInDirection, ref actPosX, ref actPosY);
+            List<List<StreetBlock>> mapList = simu.getMapInfo(X, Y, rotation, mapFieldsInDirection, ref actPosX, ref actPosY, ref actOffSetX, ref actOffsetY);
 
             // virtualize for debug causes (set debug = true if you want to see one vehicles map)
             if (debug)

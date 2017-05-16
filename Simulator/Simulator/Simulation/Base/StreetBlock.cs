@@ -38,6 +38,7 @@ namespace Simulator.Simulation.Base
     {
         Left,
         Right,
-        Straight
+        Straight,
+        None
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FhMapDrawing.Helper;
+using FhMapDrawing.ServiceReference1;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -6,8 +8,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using FhMapDrawing.Helper;
-using FhMapDrawing.ServiceReference1;
 using TiledSharp;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -71,7 +71,7 @@ namespace FhMapDrawing
 
             tiles = new List<TilesInfo>(map.Tilesets.Count);
 
-            foreach(var tile in map.Tilesets)
+            foreach (var tile in map.Tilesets)
             {
                 FileStream fileStream = new FileStream("Content/" + tile.Image.Source.ToString(), FileMode.Open);
                 Texture2D tileset = Texture2D.FromStream(GraphicsDevice, fileStream);
@@ -137,7 +137,7 @@ namespace FhMapDrawing
                 graphics.IsFullScreen = !graphics.IsFullScreen;
                 graphics.ApplyChanges();
             }
-                
+
 
             // TODO: Add your update logic here
 
@@ -181,7 +181,7 @@ namespace FhMapDrawing
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            for(var layer = 0; layer < map.Layers.Count; layer++)
+            for (var layer = 0; layer < map.Layers.Count; layer++)
                 for (var i = 0; i < map.Layers[layer].Tiles.Count; i++)
                 {
                     int gid = map.Layers[layer].Tiles[i].Gid;
@@ -214,7 +214,7 @@ namespace FhMapDrawing
                     }*/
                     //Ampel Test Ende
 
-                    
+
 
 
                     // Empty tile, do nothing
@@ -249,11 +249,11 @@ namespace FhMapDrawing
                 }
 
             //Houses etc
-            foreach(var item in map.ObjectGroups)
+            foreach (var item in map.ObjectGroups)
             {
-                if(item.Name.Contains("Umgebung"))
+                if (item.Name.Contains("Umgebung"))
                 {
-                    foreach(var obj in item.Objects)
+                    foreach (var obj in item.Objects)
                     {
                         TilesInfo temp = tiles.Find(z => z.Name.Contains("Umgebung"));
                         int tileFrame = obj.Tile.Gid - 162;
@@ -330,7 +330,7 @@ namespace FhMapDrawing
                         int x = (int)((item.X) * scale);
                         int y = (int)((item.Y) * scale);
 
-                        spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth, temp.TileHeight), SpriteEffects.None, 1);
+                        spriteBatch.Draw(temp.Tileset, new Rectangle(x, y, (int)(temp.TileWidth * scale), (int)(temp.TileHeight * scale)), tilesetRec, Color.White, rotate, new Vector2(temp.TileWidth / 2, temp.TileHeight / 2), SpriteEffects.None, 1);
                     }
                 }
             }
@@ -342,7 +342,7 @@ namespace FhMapDrawing
 
                 using (var graphics = Graphics.FromImage(bitmap))
                 {
-                    graphics.DrawString("Disconnected", new Font("Tahoma", 14), Brushes.Red, new PointF(0,0));
+                    graphics.DrawString("Disconnected", new Font("Tahoma", 14), Brushes.Red, new PointF(0, 0));
                 }
 
                 spriteBatch.Draw(GetTexture(GraphicsDevice, bitmap), Vector2.Zero);
