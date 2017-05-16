@@ -48,3 +48,4 @@ E:\FHS\SA-LAB\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug
 E:\FHS\SA-LAB\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\SharpDX.Direct3D9.dll
 E:\FHS\SA-LAB\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\bin\Windows\x86\Debug\MonoGame.Framework.xml
 E:\FHS\SA-LAB\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.csprojResolveAssemblyReference.cache
+C:\Users\Admin\Source\Repos\Fahrzeugsimulation\FhMapDrawing\FhMapDrawing\obj\x86\Debug\FhMapDrawing.csprojResolveAssemblyReference.cache
