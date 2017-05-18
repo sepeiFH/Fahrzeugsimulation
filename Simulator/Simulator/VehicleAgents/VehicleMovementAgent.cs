@@ -224,7 +224,10 @@ namespace Simulator.VehicleAgents
             double newVelocity = 0;
 
             if (ActVelocity == MaxVelocity)
+            {
                 newVelocity = ActVelocity;
+                calcNewAccerleration(false, false, -1d);
+            }
             else if (ActVelocity > MaxVelocity)
             {
                 newVelocity = ActVelocity + ActAcceleration;
@@ -236,10 +239,12 @@ namespace Simulator.VehicleAgents
                 calcNewAccerleration(true, false, -1d);
             }
             else if (ActVelocity + ActAcceleration > MaxVelocity)
+            {
                 newVelocity = MaxVelocity;
+                calcNewAccerleration(false, false, -1d);
+            }
 
             ActVelocity = newVelocity;
-            calcNewAccerleration(true, false, -1d);
         }
 
         private void calcNewAccerleration(bool accelerate, bool decelerate, Double fieldsToBreak)

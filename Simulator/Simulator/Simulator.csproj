@@ -51,6 +51,9 @@
     <Reference Include="TiledSharp">
       <HintPath>Libs\TiledSharp.dll</HintPath>
     </Reference>
+    <Reference Include="VehicleHandoverLibrary">
+      <HintPath>Libs\VehicleHandoverLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
