@@ -16,6 +16,9 @@ namespace Simulator.Simulation.Base
         public double Length { get; set; }
         public VehicleList vehicleType { get; set; }
 
+        /// <summary>
+        /// Enum for the possible vehicle types, values equals the GID of the values
+        /// </summary>
         public enum VehicleList
         {
             Car1 = 1004,

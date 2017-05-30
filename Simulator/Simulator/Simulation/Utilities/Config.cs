@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Simulator.Simulation.Utilities
 {
+    /// <summary>
+    /// Class for loading the vehicle - configuration into an setting object defined in App.config
+    /// </summary>
     public class ConfigVehicle
     {
         private double maxVelocity;
@@ -18,6 +21,9 @@ namespace Simulator.Simulation.Utilities
         public int GID { get; set; }
     }
 
+    /// <summary>
+    /// Class for loading the general configuration into an setting object defined in App.config
+    /// </summary>
     public class SimulationConfig
     {
         public int SpawnTimeFrame { get; set; }
@@ -28,6 +34,9 @@ namespace Simulator.Simulation.Utilities
         public List<ConfigVehicle> Vehicles { get; set; }
     }
 
+    /// <summary>
+    /// Class for loading the traffic control configuration into an setting object defined in App.config
+    /// </summary>
     class CrossingConfig
     {
         public int Takt { get; set; }

@@ -3,6 +3,9 @@ using TiledSharp;
 
 namespace Simulator.Simulation.Base
 {
+    /// <summary>
+    /// Basic Element for the simulation and the GUI
+    /// </summary>
     public abstract class Block : IComparable<Block>
     {
         public int GID { get; set; }
@@ -18,13 +21,18 @@ namespace Simulator.Simulation.Base
             return Type.CompareTo(other.Type);
         }
     }
-
+    /// <summary>
+    /// Enum for the two needed blocktypes: staticBlocks can't move or change their behavior, dynamic blocks do that.
+    /// </summary>
     public enum BlockType
     {
         StaticBlock,
         DynamicBlock
     }
 
+    /// <summary>
+    /// Basic Class for most of the dynamic blocks, it adds the TmxObject to the dynamic block. This enables the transmission and usage for the GUI
+    /// </summary>
     public abstract class BlockObject : DynamicBlock
     {
         public TmxObject Block { get; set; }

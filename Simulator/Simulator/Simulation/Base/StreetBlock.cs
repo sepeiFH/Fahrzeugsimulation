@@ -16,6 +16,10 @@ namespace Simulator.Simulation.Base
     {
         public List<CrossingDirection> PossibleCrosDirs { get; set; }
     }
+
+    /// <summary>
+    /// Like Crossing Element and adds Coordinates and set Type to staticBlock
+    /// </summary>
     public class CrossingBlock : CrossingElement
     {
         public int posX { get; set; }
@@ -26,6 +30,9 @@ namespace Simulator.Simulation.Base
         }
     }
 
+    /// <summary>
+    /// Enum for the directions in which a street block leads
+    /// </summary>
     public enum StreetDirection
     {
         RightToLeft = 3,
@@ -34,6 +41,10 @@ namespace Simulator.Simulation.Base
         BottomToTop = 6,
         Crossing = 7
     }
+
+    /// <summary>
+    /// Enum for the possible Directions in which a crossing element leads
+    /// </summary>
     public enum CrossingDirection
     {
         Left,

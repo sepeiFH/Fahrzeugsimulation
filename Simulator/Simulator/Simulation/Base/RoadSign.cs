@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TiledSharp;
 
 namespace Simulator.Simulation.Base
 {
+    /// <summary>
+    /// Basic Class for all roadsigns. 
+    /// </summary>
     public class RoadSign : BlockObject
     {
         public int RoadSignGroup
@@ -38,11 +37,17 @@ namespace Simulator.Simulation.Base
         }
     }
 
+    /// <summary>
+    /// Implementation of the RoadSign class for the traffic light objects of the simulation and GUI.
+    /// </summary>
     public class TrafficLight : RoadSign
     {
         public static int RedGID = 12;
         public LightStatus Status { get; set; }
 
+        /// <summary>
+        /// Enum for the different light states. enum numbers equals the GID of the GUI-block
+        /// </summary>
         public enum LightStatus
         {
             Red = 12,
@@ -72,6 +77,9 @@ namespace Simulator.Simulation.Base
 
         private int emergencyPhaseTicks = 30;
 
+        /// <summary>
+        /// MEthod to change the traffic lights state while the traffic control is not available and simulation is in emergency-traffic-control-mode
+        /// </summary>
         private void changeState()
         {
             //Console.WriteLine("Ampel State Changed");

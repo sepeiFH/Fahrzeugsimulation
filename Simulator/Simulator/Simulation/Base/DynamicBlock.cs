@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Simulator.Simulation.Base
+﻿namespace Simulator.Simulation.Base
 {
+    /// <summary>
+    /// Basic Class for most of the dynamic blocks, it defines the minimal Fields which every dynamic block needs
+    /// </summary>
     public abstract class DynamicBlock : Block
     {
         public abstract double X { get; set; }
