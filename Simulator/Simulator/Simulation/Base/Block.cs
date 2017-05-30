@@ -1,8 +1,4 @@
-﻿using Simulator.Simulation.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.Serialization;
+﻿using System;
 using TiledSharp;
 
 namespace Simulator.Simulation.Base
@@ -36,7 +32,7 @@ namespace Simulator.Simulation.Base
         public override double X
         {
             get { return Block.X; }
-            set { if(Block != null) Block.X = value; }
+            set { if (Block != null) Block.X = value; }
         }
 
         public override double Y

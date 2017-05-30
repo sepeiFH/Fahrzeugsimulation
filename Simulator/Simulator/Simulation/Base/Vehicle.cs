@@ -1,9 +1,5 @@
 ﻿using Simulator.VehicleAgents;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Simulator.Simulation.Base
 {
@@ -15,9 +11,10 @@ namespace Simulator.Simulation.Base
         public override int GID { get; set; }
         public override int ID { get; set; }
         public override bool IsBroken { get; set; }
-        private VehicleMovementAgent driver;
+        public VehicleMovementAgent driver;
         public double Width { get; set; }
-        public double Height { get; set; }
+        public double Length { get; set; }
+        public VehicleList vehicleType { get; set; }
 
         public enum VehicleList
         {
@@ -31,7 +28,7 @@ namespace Simulator.Simulation.Base
         {
             IsBroken = false;
         }
-        public Vehicle(Random rand,int gid, double rawVelocity, double rawAccerleration, double rawDeceleration) : base()
+        public Vehicle(Random rand, int gid, double rawVelocity, double rawAccerleration, double rawDeceleration) : base()
         {
             this.GID = gid;
             switch (GID)
@@ -53,11 +50,11 @@ namespace Simulator.Simulation.Base
                     break;
             }
 
-            driver.MaxVelocity = rawVelocity / Program.settings.Takt;
-            driver.MaxAcceleration = rawAccerleration / Program.settings.Takt;
-            driver.MaxDeceleration = rawDeceleration / Program.settings.Takt;
+            driver.MaxVelocity = (rawVelocity * 10) / Program.settings.Takt;
+            driver.MaxAcceleration = (rawAccerleration * 10) / Program.settings.Takt;
+            driver.MaxDeceleration = (rawDeceleration * 10) / Program.settings.Takt;
         }
-        
+
         public override void update()
         {
             driver.act(this);

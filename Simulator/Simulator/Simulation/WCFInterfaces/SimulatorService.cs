@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Simulator.Simulation.Base;
+using Simulator.Simulation.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Drawing;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
-using Simulator.Simulation.Base;
-using Simulator.Simulation.Utilities;
 
 namespace Simulator.Simulation.WCFInterfaces
 {
@@ -103,7 +100,8 @@ namespace Simulator.Simulation.WCFInterfaces
                     //if (obj is Vehicle)
                     tempContracts.Add(new BlockObjectContract() { GID = obj.GID, Rotation = obj.Rotation, X = obj.X, Y = obj.Y });
                 }
-            } catch (Exception e) { }
+            }
+            catch (Exception e) { }
 
             return tempContracts;
         }
@@ -121,7 +119,7 @@ namespace Simulator.Simulation.WCFInterfaces
                     if (Simulator.EmergencyModeActive)
                         tempLight = new TrafficLightContract() { Status = TrafficLightStatus.Red, Position = convertPosition(roadSign.Rotation), ID = roadSign.ID, PosX = roadSign.X, PosY = roadSign.Y };
                     else
-                        tempLight = new TrafficLightContract() { Status = convertStatus(roadSign.Status), Position = convertPosition(roadSign.Rotation),ID=roadSign.ID, PosX=roadSign.X, PosY=roadSign.Y};
+                        tempLight = new TrafficLightContract() { Status = convertStatus(roadSign.Status), Position = convertPosition(roadSign.Rotation), ID = roadSign.ID, PosX = roadSign.X, PosY = roadSign.Y };
                     if (tempGroup != null)
                     {
                         tempGroup.TrafficLights.Add(tempLight);
@@ -200,7 +198,7 @@ namespace Simulator.Simulation.WCFInterfaces
         }
 
         private static TrafficLightPosition convertPosition(double rotation)
-        { 
+        {
             return rotation == 90 ? TrafficLightPosition.Top : (rotation == 180 ? TrafficLightPosition.Right : (rotation == 270 ? TrafficLightPosition.Bottom : TrafficLightPosition.Left));
         }
     }

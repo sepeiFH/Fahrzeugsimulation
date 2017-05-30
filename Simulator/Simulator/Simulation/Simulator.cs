@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using TiledSharp;
+using VehicleHandoverLibrary;
+using static Simulator.Simulation.Base.Vehicle;
 
 namespace Simulator.Simulation
 {
@@ -31,30 +33,34 @@ namespace Simulator.Simulation
         }
         #endregion
         #region Fields
-        public static List<Vehicle> vehiclesToAdd = new List<Vehicle>();
-        public int RefreshesPerSecond = Program.settings.Takt;
-        public int EmergencySeconds = Program.settings.EmergencyTime;
         private int spawningTicks;
         private int tickCountToSpawn;
+        private Stopwatch stopWatch;
+        private List<Base.Vehicle> vehicleList;
+        private List<CrossingBlock> crossingBlocks;
+        private List<List<StreetBlock>> Streetmap;
         private readonly TimeSpan SimulatorSpeed;
         private readonly TimeSpan EmergencyTime;
-        private Stopwatch stopWatch;
-        public Stopwatch emergencyWatch;
-        private List<Coordiantes> spawningPoints;
-        private List<Vehicle> vehicleList;
-        public List<TrafficLight> roadSignList;
+        private VehicleReceiver vehicleReceiver;
+        private VehicleSender vehicleSender;
+        private static int idCount = 0;
+        private static Random rand = new Random();
+        private static List<Coordiantes> spawningPoints;
+
         public static bool EmergencyModeActive { get; set; }
-        Random rand = new Random();
-        private int idCount = 0;
+        public int RefreshesPerSecond = Program.settings.Takt;
+        public int EmergencySeconds = Program.settings.EmergencyTime;
+        public double maxTurningSpeed;
+        public Stopwatch emergencyWatch;
         public TmxMap map;
-        private List<List<StreetBlock>> Streetmap;
-        //public List<RoadSign> allRoadSigns;
-        //public List<Vehicle> allVehicles;
-
-        public List<DynamicBlock> allDynamicObjects;
-
         public string mapString = File.ReadAllText("Map/FH3.tmx");
-        List<CrossingBlock> crossingBlocks;
+        public static List<Base.Vehicle> vehiclesToAdd = new List<Base.Vehicle>();
+        public List<DynamicBlock> allDynamicObjects;
+        public static List<Base.Vehicle> receivingVehicles;
+        public List<TrafficLight> roadSignList;
+
+        //public List<RoadSign> allRoadSigns;
+        //public List<Base.Vehicle> allVehicles;
 
         #endregion
 
@@ -90,10 +96,15 @@ namespace Simulator.Simulation
             BlockMapping.Blocks.Count();
             allDynamicObjects = new List<DynamicBlock>();
             roadSignList = new List<TrafficLight>();
-            vehicleList = new List<Vehicle>();
+            vehicleList = new List<Base.Vehicle>();
+            receivingVehicles = new List<Base.Vehicle>();
             EmergencyModeActive = true;
+            vehicleReceiver = new VehicleReceiver(Groups.GROUP01);
+            vehicleReceiver.ReceiveEventHandler += VehicleReceiver_ReceiveEventHandler;
+            vehicleSender = new VehicleSender(Groups.GROUP01);
+            maxTurningSpeed = (Program.settings.TurningSpeed * 10) / Program.settings.Takt;
             //allRoadSigns = new List<RoadSign>();
-            //allVehicles = new List<Vehicle>();
+            //allVehicles = new List<Base.Vehicle>();
 
             if (map.ObjectGroups.Count > 0)
             {
@@ -117,6 +128,42 @@ namespace Simulator.Simulation
                     }
                 }
             }
+        }
+
+        private static void VehicleReceiver_ReceiveEventHandler(object sender, VehicleEventArgs e)
+        {
+            var zeroSpawningPoints = spawningPoints.FindAll(x => x.X <= 0);
+            var spawningPoint = zeroSpawningPoints.ElementAt(rand.Next(zeroSpawningPoints.Count - 1));
+            List<ConfigVehicle> vehicleList;
+            ConfigVehicle randVehicle;
+
+            if (e.Vehicle.Type.Equals(VehicleType.CAR))
+            {
+                vehicleList = Program.settings.Vehicles.FindAll(x => x.Type.Contains("KFZ"));
+                randVehicle = vehicleList.ElementAt(rand.Next(vehicleList.Count));
+            }
+            else if (e.Vehicle.Type.Equals(VehicleType.TRUCK))
+            {
+                vehicleList = Program.settings.Vehicles.FindAll(x => x.Type.Contains("LKW"));
+                randVehicle = vehicleList.ElementAt(rand.Next(vehicleList.Count));
+            }
+            else
+            {
+                vehicleList = Program.settings.Vehicles.FindAll(x => x.Type.Contains("MFZ"));
+                randVehicle = vehicleList.ElementAt(rand.Next(vehicleList.Count));
+            }
+
+            Base.Vehicle newVehicle = new Base.Vehicle(rand, randVehicle.GID, e.Vehicle.MaxVelocity, e.Vehicle.MaxAcceleration, e.Vehicle.MaxDeceleration);
+
+            newVehicle.ID = ++idCount;
+            newVehicle.Length = e.Vehicle.Length * 6;
+            newVehicle.Width = e.Vehicle.Width * 6;
+            newVehicle.X = spawningPoint.X;
+            newVehicle.Y = spawningPoint.Y;
+            newVehicle.Rotation = 180;
+            newVehicle.vehicleType = randVehicle.Type.Equals("KFZ1") ? VehicleList.Car1 : (randVehicle.Type.Equals("KFZ2") ? VehicleList.Car2 : (randVehicle.Type.Equals("LKW1") ? VehicleList.Truck1 : (randVehicle.Type.Equals("LKW2") ? VehicleList.Truck2 : VehicleList.Motorcycle)));
+
+            receivingVehicles.Add(newVehicle);
         }
 
         private void initStreetMap()
@@ -274,9 +321,34 @@ namespace Simulator.Simulation
                     else if (tickCount >= spawningTicks)
                         tickCount = 0;
 
+                    if (receivingVehicles.Count > 0)
+                    {
+                        allDynamicObjects.AddRange(receivingVehicles);
+                        receivingVehicles.Clear();
+                    }
+
                     foreach (DynamicBlock dynObject in allDynamicObjects)
                     {
                         dynObject.update();
+                        if (dynObject.X > (map.Width + 3) * 32 && dynObject.GetType().Equals(typeof(Base.Vehicle)))
+                        {
+                            var actVehicle = (Base.Vehicle)dynObject;
+                            var vehicle = new VehicleHandoverLibrary.Vehicle();
+                            vehicle.Length = actVehicle.Length / 6;
+                            vehicle.Width = actVehicle.Width / 6;
+                            vehicle.MaxAcceleration = (actVehicle.driver.MaxAcceleration * Program.settings.Takt) / 10;
+                            vehicle.MaxDeceleration = (actVehicle.driver.MaxDeceleration * Program.settings.Takt) / 10;
+                            vehicle.MaxVelocity = (actVehicle.driver.MaxVelocity * Program.settings.Takt) / 10;
+                            if (actVehicle.vehicleType == VehicleList.Car1 || actVehicle.vehicleType == VehicleList.Car2)
+                                vehicle.Type = VehicleType.CAR;
+                            else if (actVehicle.vehicleType == VehicleList.Truck1 || actVehicle.vehicleType == VehicleList.Truck2)
+                                vehicle.Type = VehicleType.TRUCK;
+                            else
+                                vehicle.Type = VehicleType.BIKE;
+                            // Push vehicle
+                            vehicleSender.PushVehicle(vehicle);
+                        }
+
                         if (dynObject.X < -100 || dynObject.X > (map.Width + 3) * 32 || dynObject.Y < -100 || dynObject.Y > (map.Height + 3) * 32)
                             removeObjects.Add(dynObject);
                     }
@@ -284,19 +356,7 @@ namespace Simulator.Simulation
                     foreach (DynamicBlock remObject in removeObjects)
                     {
                         allDynamicObjects.Remove(remObject);
-                        /*if (allDynamicObjects.Remove(remObject))
-                        {
-                            removeObjects.Remove(removeObjects.Find(x => x == remObject));
-                        }*/
                     }
-                    //Update All Cars
-                    /*foreach (Vehicle vehicle in allVehicles)
-                        vehicle.update();
-
-                    foreach (RoadSign roadsign in allRoadSigns)
-                        roadsign.update();*/
-
-                    //Console.WriteLine(DateTime.Now);
                     stopWatch.Restart();
                 }
                 else
@@ -308,8 +368,8 @@ namespace Simulator.Simulation
         private void spawnVehicle(List<int> spawningList)
         {
             int num = rand.Next(1, spawningList.Count);
-            setVehicle(spawningList[num - 1], num - 1);
-            spawningList.RemoveAt(num - 1);
+            //setVehicle(spawningList[num - 1], num - 1);
+            //spawningList.RemoveAt(num - 1);
         }
 
         private void setVehicle(int tempGID, int listPlace)
@@ -317,7 +377,7 @@ namespace Simulator.Simulation
             int randNum = rand.Next(1, spawningPoints.Count());
             Coordiantes coordinates = spawningPoints[randNum - 1];
             ConfigVehicle tempVehicle = Program.settings.Vehicles.Find(x => x.GID == tempGID);
-            Vehicle vehicle = new Vehicle(rand, tempGID, tempVehicle.MaxVelocity, tempVehicle.MaxAcceleration, tempVehicle.MaxDeceleration) { Rotation = coordinates.Rotation, X = coordinates.X, Y = coordinates.Y, Height = tempVehicle.Height, Width = tempVehicle.Width };
+            Base.Vehicle vehicle = new Base.Vehicle(rand, tempGID, tempVehicle.MaxVelocity, tempVehicle.MaxAcceleration, tempVehicle.MaxDeceleration) { Rotation = coordinates.Rotation, X = coordinates.X, Y = coordinates.Y, Length = tempVehicle.Length, Width = tempVehicle.Width, vehicleType = tempVehicle.Type.Contains("KFZ1") ? VehicleList.Car1 : (tempVehicle.Type.Contains("KFZ2") ? VehicleList.Car2 : (tempVehicle.Type.Contains("LKW1") ? VehicleList.Truck1 : (tempVehicle.Type.Contains("LKW2") ? VehicleList.Truck2 : VehicleList.Motorcycle))) };
             allDynamicObjects.Add(vehicle);
         }
         #endregion

@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using static Simulator.Simulation.Base.Vehicle;
 
 namespace Simulator
 {
@@ -37,10 +38,11 @@ namespace Simulator
                 host.Open();
 
                 Console.WriteLine("The service is ready at {0}", baseAddress);
-                Console.WriteLine("Press <Enter> to stop the service.");
+                //Console.WriteLine("Press <Enter> to stop the service.");
                 Random rand = new Random();
                 while (true)
                 {
+                    Console.WriteLine("Add Vehicle: GID, maxVelocity, X, Y, Rotation");
                     string input = Console.ReadLine();
                     string[] inputList = input.Split(';');
                     int vehicleGID = int.Parse(inputList[0]);
@@ -63,8 +65,9 @@ namespace Simulator
                 Rotation = vehicleRotation,
                 X = vehicleX,
                 Y = vehicleY,
-                Height = tempVehicle.Height,
-                Width = tempVehicle.Width
+                Width = tempVehicle.Width,
+                Length = tempVehicle.Length,
+                vehicleType = tempVehicle.Type.Contains("KFZ1") ? VehicleList.Car1 : (tempVehicle.Type.Contains("KFZ2") ? VehicleList.Car2 : (tempVehicle.Type.Contains("LKW1") ? VehicleList.Truck1 : (tempVehicle.Type.Contains("LKW2") ? VehicleList.Truck2 : VehicleList.Motorcycle)))
             };
             Simulator.Simulation.Simulator.vehiclesToAdd.Add(vehicle);
         }

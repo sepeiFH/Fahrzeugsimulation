@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Simulator.Simulation.Utilities
 {
     public class ConfigVehicle
     {
-        public double MaxVelocity { get; set; }
-        public double MaxAcceleration { get; set; }
-        public double MaxDeceleration { get; set; }
-        public double Height { get; set; }
+        private double maxVelocity;
+        public double MaxVelocity { get { return maxVelocity; } set { maxVelocity = value > 100 ? value / 10 : value; } }
+        private double maxAcceleration;
+        public double MaxAcceleration { get { return maxAcceleration; } set { maxAcceleration = value > 100 ? value / 10 : value; } }
+        private double maxDeceleration;
+        public double MaxDeceleration { get { return maxDeceleration; } set { maxDeceleration = value > 100 ? value / 10 : value; } }
+        public double Length { get; set; }
         public double Width { get; set; }
         public string Type { get; set; }
         public int SpawnRate { get; set; }
@@ -21,6 +21,7 @@ namespace Simulator.Simulation.Utilities
     public class SimulationConfig
     {
         public int SpawnTimeFrame { get; set; }
+        public int TurningSpeed { get; set; }
         public int EmergencyTime { get; set; }
         public int Takt { get; set; }
         public String BaseUrl { get; set; }

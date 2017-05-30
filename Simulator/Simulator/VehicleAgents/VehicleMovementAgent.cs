@@ -22,6 +22,7 @@ namespace Simulator.VehicleAgents
         public int vehicleMapPositionY { get; set; }
         private int count = 0;
         private Random rand;
+        private bool rotationAllowed = false;
 
         private character Character { get; set; }
 
@@ -77,9 +78,11 @@ namespace Simulator.VehicleAgents
             StreetBlock actualBlock = null;
             StreetBlock aheadBlock = null;
             // find vehicle in his map
-            // If vehicle isn't on his own map, driver foreward to get into the simulationMap
+            // If vehicle isn't on his own map, drive foreward to get into the simulationMap
             if (actPosInMapListX > 0)
             {
+                // calculate Blocks ahead and behind the vehicle
+                // only get last block if car drives without degrees to rotate
                 if (degreesToRotate == 0 && actPosInMapListY >= 0 && actPosInMapListX - 1 >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
                     lastBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX - 1];
                 if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
@@ -89,6 +92,7 @@ namespace Simulator.VehicleAgents
                 if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX + 3 && vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3] != null && vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3].GetType() == typeof(CrossingBlock))
                     crossingAhead = (CrossingBlock)vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3];
             }
+            // if there is a crossing ahead and there is no next Move, set nextMove and degrees to rotate
             if (crossingAhead != null && nextMove == CrossingDirection.None)
             {
                 nextMove = crossingAhead.PossibleCrosDirs[rand.Next(crossingAhead.PossibleCrosDirs.Count - 1)];
@@ -101,10 +105,12 @@ namespace Simulator.VehicleAgents
             {
                 if (actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Right)
                 {
+                    rotationAllowed = true;
                     //calcNewAccerleration(false, true, -1d);
                 }
-                if (actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left)
+                if (actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left && actOffsetX < 15)
                 {
+                    rotationAllowed = true;
                     //calcNewAccerleration(false, true, -1d);
                 }
                 if (lastBlock != null && lastBlock.Direction == StreetDirection.Crossing && actualBlock.Direction != StreetDirection.Crossing && nextMove == CrossingDirection.Straight)
@@ -115,26 +121,29 @@ namespace Simulator.VehicleAgents
                 if (degreesToRotate > 0 && actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing)
                 {
                     //MaxVelocity /= 6;
+                    /*
                     vehicle.Rotation += 15;
                     degreesToRotate -= 15;
 
                     if (vehicle.Rotation == 360)
-                        vehicle.Rotation = 0;
+                        vehicle.Rotation = 0;*/
                 }
                 else if (degreesToRotate < 0 && actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && actOffsetX >= 25)
                 {
                     //MaxVelocity /= 6;
-                    if (vehicle.Rotation == 0)
+                    /*
+                     if (vehicle.Rotation == 0)
                         vehicle.Rotation = 360;
 
                     vehicle.Rotation -= 15;
-                    degreesToRotate += 15;
+                    degreesToRotate += 15;*/
                 }
                 //calcnewPosition(vehicle);
                 //calcNewVelocity();
                 //calcNewAccerleration(true, -1d);
             }
-            if (degreesToRotate > 0 && degreesToRotate < 90)
+
+            if (degreesToRotate > 0 && degreesToRotate <= 90 && rotationAllowed)
             {
                 if (vehicle.Rotation == 360)
                     vehicle.Rotation = 0;
@@ -145,10 +154,11 @@ namespace Simulator.VehicleAgents
                 if (degreesToRotate == 0)
                 {
                     nextMove = CrossingDirection.None;
-                    MaxVelocity *= 6;
+                    rotationAllowed = false;
+                    //MaxVelocity *= 6;
                 }
             }
-            else if (degreesToRotate < 0 && degreesToRotate > -90)
+            else if (degreesToRotate < 0 && degreesToRotate >= -90 && rotationAllowed)
             {
                 if (vehicle.Rotation == 0)
                     vehicle.Rotation = 360;
@@ -158,7 +168,8 @@ namespace Simulator.VehicleAgents
                 if (degreesToRotate == 0)
                 {
                     nextMove = CrossingDirection.None;
-                    MaxVelocity *= 6;
+                    rotationAllowed = false;
+                    //MaxVelocity *= 6;
                 }
             }
 
@@ -255,8 +266,8 @@ namespace Simulator.VehicleAgents
                 if (MaxVelocity > ActVelocity && ActAcceleration < MaxAcceleration && Character == character.aggresive)
                     newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration);
                 else if (MaxVelocity > ActVelocity && ActAcceleration < MaxAcceleration)
-                    if ((MaxAcceleration - ActAcceleration) - 1 >= 0)
-                        newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration) - 1;
+                    if ((MaxAcceleration - ActAcceleration) - 1 * Program.settings.Takt >= 0)
+                        newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration) - 1 * Program.settings.Takt;
                     else
                         newAcc = ActAcceleration + (MaxAcceleration - ActAcceleration);
                 else if (MaxVelocity > ActVelocity)
@@ -267,8 +278,8 @@ namespace Simulator.VehicleAgents
                 if (ActVelocity > 0 && ActAcceleration > MaxDeceleration * -1 && Character == character.aggresive)
                     newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration);
                 else if (ActVelocity > 0 && ActAcceleration > MaxDeceleration)
-                    if (MaxDeceleration + ActAcceleration - 1 >= 0)
-                        newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration) - 1;
+                    if (MaxDeceleration + ActAcceleration - 1 * Program.settings.Takt >= 0)
+                        newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration) - 1 * Program.settings.Takt;
                     else
                         newAcc = ActAcceleration - (MaxDeceleration + ActAcceleration);
                 else if (ActVelocity > 0)
