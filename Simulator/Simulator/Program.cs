@@ -9,15 +9,22 @@ using static Simulator.Simulation.Base.Vehicle;
 
 namespace Simulator
 {
+    /// <summary>
+    /// Main Class of the Simulator-Application
+    /// </summary>
     class Program
     {
         public static SimulationConfig settings = (dynamic)ConfigurationManager.GetSection("simulationConfig");
+
+        /// <summary>
+        /// Main-Method of the simulator-application. Opens the Host for the WCF-services and initialize and starts the simulatior.
+        /// </summary>
         static void Main(string[] args)
         {
             Uri baseAddress = new Uri(settings.BaseUrl);
 
             Simulation.Simulator simu = Simulation.Simulator.Instance;
-            simu.init(settings);
+            simu.init();
             simu.GetSimulatorThread().Start();
             SimulatorService.mapString = simu.mapString;
             SimulatorService.simu = simu;
@@ -57,6 +64,8 @@ namespace Simulator
                 host.Close();
             }
         }
+
+        // Test-Method
         private static void createVehicle(Random rand, int vehicleGID, double maxVelocity, double vehicleX, double vehicleY, double vehicleRotation)
         {
             ConfigVehicle tempVehicle = Program.settings.Vehicles.Find(x => x.GID == vehicleGID);

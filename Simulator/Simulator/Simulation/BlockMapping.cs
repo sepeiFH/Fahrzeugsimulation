@@ -10,21 +10,6 @@ namespace Simulator.Simulation
     {
         public static List<Block> Blocks { get; set; }
 
-        /*private static List<int> roadSignList = null;
-        public static List<int> RoadSignList {
-            get
-            {
-                if (roadSignList == null)
-                {
-                    roadSignList = new List<int>();
-                    foreach (RoadSigns roadSigns in Enum.GetValues(typeof(RoadSigns)))
-                        roadSignList.Add((int)roadSigns);
-                }
-                    
-                return roadSignList;
-            }
-        }*/
-
         static BlockMapping()
         {
             Blocks = ReflectiveEnumerator.GetEnumerableOfType<Block>().ToList();
@@ -97,13 +82,6 @@ namespace Simulator.Simulation
             Direction = StreetDirection.Crossing;
         }
     }
-
-    /*public enum RoadSigns
-    {
-        TrafficLightRed = 12,
-        TrafficLightYellow = 13,
-        TrafficLightGreen = 14,
-    }*/
     #endregion
 
 

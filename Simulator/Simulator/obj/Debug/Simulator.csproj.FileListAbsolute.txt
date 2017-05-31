@@ -18,7 +18,6 @@ E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Simulator.exe
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Simulator.pdb
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\TiledSharp.dll
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\SimpleConfig.dll
-E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache
 C:\Users\Admin\Source\Repos\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\SimpleConfig.dll
 C:\Users\Admin\Source\Repos\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\VehicleHandoverLibrary.dll
@@ -30,3 +29,4 @@ E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\AWSSDK.Core.xml
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\AWSSDK.SQS.pdb
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\AWSSDK.SQS.xml
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Newtonsoft.Json.xml
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache

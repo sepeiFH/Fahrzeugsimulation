@@ -13,6 +13,9 @@ using static Simulator.Simulation.Base.Vehicle;
 
 namespace Simulator.Simulation
 {
+    /// <summary>
+    /// Singleton class for the simulation logic
+    /// </summary>
     public sealed class Simulator
     {
         #region Singleton
@@ -32,6 +35,7 @@ namespace Simulator.Simulation
             }
         }
         #endregion
+
         #region Fields
         private int spawningTicks;
         private int tickCountToSpawn;
@@ -65,6 +69,10 @@ namespace Simulator.Simulation
         #endregion
 
         #region Helperclasses
+
+        /// <summary>
+        /// helper class for the simulation logic to handle X and Y coordinates and rotation in one class
+        /// </summary>
         private class Coordiantes
         {
             public double X { get; set; }
@@ -84,12 +92,13 @@ namespace Simulator.Simulation
         #endregion
 
         #region Init
-        public void init(SimulationConfig settings)
+        /// <summary>
+        /// Init Method for the Simulator, in here, there are the initial instantiations of some fields and first creation of the map
+        /// </summary>
+        public void init()
         {
-            //RefreshesPerSecond = settings.Takt;
-            //EmergencySeconds = settings.EmergencyTime;
-            spawningTicks = RefreshesPerSecond * settings.SpawnTimeFrame;
-            tickCountToSpawn = spawningTicks / settings.Vehicles.Sum(x => x.SpawnRate);
+            spawningTicks = RefreshesPerSecond * Program.settings.SpawnTimeFrame;
+            tickCountToSpawn = spawningTicks / Program.settings.Vehicles.Sum(x => x.SpawnRate);
             map = new TmxMap(mapString, true);
             initStreetMap();
             initSpawningList();
@@ -103,8 +112,6 @@ namespace Simulator.Simulation
             vehicleReceiver.ReceiveEventHandler += VehicleReceiver_ReceiveEventHandler;
             vehicleSender = new VehicleSender(Groups.GROUP01);
             maxTurningSpeed = (Program.settings.TurningSpeed * 10) / Program.settings.Takt;
-            //allRoadSigns = new List<RoadSign>();
-            //allVehicles = new List<Base.Vehicle>();
 
             if (map.ObjectGroups.Count > 0)
             {
@@ -120,16 +127,20 @@ namespace Simulator.Simulation
                                 roadSign = new TrafficLight() { Block = obj };
                                 roadSignList.Add((TrafficLight)roadSign);
                             }
-                            //allRoadSigns.Add(roadSign);
                             roadSign.ID = ++idCount;
                             allDynamicObjects.Add(roadSign);
-                            //if (roadSign.GID == (int)TrafficLight.LightStatus.Red)
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Event handler for the external vehicle receiving. 
+        /// </summary>
+        /// <param name="sender">Object Sender</param>
+        /// <param name="e">VehicleEventArgs</param>
+        /// <returns>void</returns>
         private static void VehicleReceiver_ReceiveEventHandler(object sender, VehicleEventArgs e)
         {
             var zeroSpawningPoints = spawningPoints.FindAll(x => x.X <= 0);
@@ -166,6 +177,11 @@ namespace Simulator.Simulation
             receivingVehicles.Add(newVehicle);
         }
 
+        /// <summary>
+        /// Method to initialize the street map. Filters out all non street Block and creates a map off streetblocks and crossing blocks.
+        /// Also add crossing direction to the crossing fields.
+        /// </summary>
+        /// <returns>void</returns>
         private void initStreetMap()
         {
             Streetmap = new List<List<StreetBlock>>();
@@ -265,9 +281,12 @@ namespace Simulator.Simulation
                 }
                 Console.Write("\n");
             }
-            int bla = 0;
         }
 
+        /// <summary>
+        /// Method to initialize the list of spawning points by checking the streetblocks which leads into the map and are on the border of the map.
+        /// </summary>
+        /// <returns>void</returns>
         public void initSpawningList()
         {
             spawningPoints = new List<Coordiantes>();
@@ -286,6 +305,11 @@ namespace Simulator.Simulation
         #endregion
 
         #region Simulator Logic
+
+        /// <summary>
+        /// Method contains the main loop of the simulation in which the simulation logic includig the call of the block updates run.
+        /// </summary>
+        /// <returns>void</returns>
         private void TickLogic()
         {
             stopWatch = new Stopwatch();
@@ -365,14 +389,24 @@ namespace Simulator.Simulation
             }
         }
 
+        /// <summary>
+        /// Method to choose a vehicle out of the vehicles to spawn and remove the spawned vehicle from the spawning list.
+        /// </summary>
+        /// <param name="spawningList">List of integer which contains the GID of the vehicles to spawn</param>
+        /// <returns>void</returns>
         private void spawnVehicle(List<int> spawningList)
         {
-            int num = rand.Next(1, spawningList.Count);
-            //setVehicle(spawningList[num - 1], num - 1);
-            //spawningList.RemoveAt(num - 1);
+            int num = rand.Next(0, spawningList.Count - 1);
+            setVehicle(spawningList.ElementAt(num));
+            spawningList.RemoveAt(num);
         }
 
-        private void setVehicle(int tempGID, int listPlace)
+        /// <summary>
+        /// Method to create a new vehicle at a random spawning point and add the vehicle to the dynamicObject List.
+        /// </summary>
+        /// <param name="tempGID">GID of the vehicle to spawn</param>
+        /// <returns>void</returns>
+        private void setVehicle(int tempGID)
         {
             int randNum = rand.Next(1, spawningPoints.Count());
             Coordiantes coordinates = spawningPoints[randNum - 1];
@@ -384,6 +418,7 @@ namespace Simulator.Simulation
 
         #region vehicle interaction
 
+        /*
         // second try: Get a cutted view of the overall streetmap
         public List<List<StreetBlock>> getMapInfo2(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances, ref int actPosInMapListX, ref int actPosInMapListY)
         {
@@ -393,6 +428,20 @@ namespace Simulator.Simulation
         }
 
         // first try: Get a new created map out of the tile-map
+        */
+
+        /// <summary>
+        /// Method to create the map in the sight of the vehicle in the vehicle-given view-range
+        /// </summary>
+        /// <param name="vehicleX">actual X coordinates of the vehicle</param>
+        /// <param name="vehicleY">actual Y coordinates of the vehicle</param>
+        /// <param name="rotation">actual rotation of the vehicle</param>
+        /// <param name="directionDistances">Dictionary which contains the distances for the viewing range</param>
+        /// <param name="actPosInMapListX">Reference to the actual x position in the generated map</param>
+        /// <param name="actPosInMapListY">Reference to the actual y position in the generated map</param>
+        /// <param name="actoffsetX">Reference to the difference between the x coordinates and the x block Position*32</param>
+        /// <param name="actoffsetY">Reference to the difference between the y coordinates and the y block Position*32</param>
+        /// <returns>List<List<StreetBlock>></returns>
         public List<List<StreetBlock>> getMapInfo(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances, ref int actPosInMapListX, ref int actPosInMapListY, ref int actoffsetX, ref int actoffsetY)
         {
             List<List<StreetBlock>> vehiclesMap = new List<List<StreetBlock>>();
@@ -528,6 +577,13 @@ namespace Simulator.Simulation
             return vehiclesMap;
         }
 
+        /// <summary>
+        /// Method to add a street or crossing block of the given GID (param 1) to the given position (param 2 and 3)
+        /// </summary>
+        /// <param name="GID">GID of the block to set/param>
+        /// <param name="posX">x position to set the block</param>
+        /// <param name="posY">y position to set the block</param>
+        /// <returns>StreetBlock</returns>
         private StreetBlock addStreetBlock(int GID, int posX, int posY)
         {
             StreetBlock block = null;
@@ -562,7 +618,15 @@ namespace Simulator.Simulation
             return block;
         }
 
-        public List<List<DynamicBlock>> getDynamicInfo(double vehicleX, double vehicleY, Dictionary<VehicleMovementAgent.side, int> directionDistances)
+        /// <summary>
+        /// TODO: Method to get the dynamic blocks
+        /// </summary>
+        /// <param name="vehicleX">actual X coordinates of the vehicle</param>
+        /// <param name="vehicleY">actual Y coordinates of the vehicle</param>
+        /// <param name="rotation">actual rotation of the vehicle</param>
+        /// <param name="directionDistances">Dictionary which contains the distances for the viewing range</param>
+        /// <returns>StreetBlock</returns>
+        public List<List<DynamicBlock>> getDynamicInfo(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances)
         {
             List<List<DynamicBlock>> vehiclesDynamicBlocks = new List<List<DynamicBlock>>();
             // find block in which the vehicle is
