@@ -103,12 +103,12 @@ namespace Simulator.VehicleAgents
             }
             if (aheadBlock != null && actualBlock != null)
             {
-                if (actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Right)
+                if (actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Right && ((actOffsetX < 15 && (vehicle.Rotation == 0 || vehicle.Rotation == 180)) || (actOffsetY > 15 && (vehicle.Rotation == 90 || vehicle.Rotation == 270))))
                 {
                     rotationAllowed = true;
                     //calcNewAccerleration(false, true, -1d);
                 }
-                if (actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left && actOffsetX < 15)
+                if (actualBlock.Direction == StreetDirection.Crossing && actualBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left && ((actOffsetX < 15 && (vehicle.Rotation == 0 || vehicle.Rotation == 180)) || (actOffsetY > 15 && (vehicle.Rotation == 90 || vehicle.Rotation == 270))))
                 {
                     rotationAllowed = true;
                     //calcNewAccerleration(false, true, -1d);

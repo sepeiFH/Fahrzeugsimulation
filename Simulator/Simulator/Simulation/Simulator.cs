@@ -62,6 +62,7 @@ namespace Simulator.Simulation
         public List<DynamicBlock> allDynamicObjects;
         public static List<Base.Vehicle> receivingVehicles;
         public List<TrafficLight> roadSignList;
+        public List<List<DynamicBlock>> dynamicObjectMap;
 
         //public List<RoadSign> allRoadSigns;
         //public List<Base.Vehicle> allVehicles;
@@ -397,8 +398,8 @@ namespace Simulator.Simulation
         private void spawnVehicle(List<int> spawningList)
         {
             int num = rand.Next(0, spawningList.Count - 1);
-            setVehicle(spawningList.ElementAt(num));
-            spawningList.RemoveAt(num);
+            //setVehicle(spawningList.ElementAt(num));
+            //spawningList.RemoveAt(num);
         }
 
         /// <summary>
@@ -470,7 +471,7 @@ namespace Simulator.Simulation
                 {
                     if (tile.X == xBlock && tile.Y == yBlock)
                     {
-                        actPosInMapListY = vehiclesMap.Count();
+                        actPosInMapListY = vehiclesMap.Count() - 1;
                         actPosInMapListX = colums.Count();
                     }
                     colums.Add(addStreetBlock(tile.Gid, tile.X, tile.Y));
@@ -482,6 +483,10 @@ namespace Simulator.Simulation
                 }
 
                 vehiclesMap.Add(colums);
+
+                //vehiclesMap.Reverse();
+                //foreach (var row in vehiclesMap)
+                //    row.Reverse();
             }
             // around 90 degree
             else if (rotation >= 45 && rotation < 135)
@@ -511,8 +516,8 @@ namespace Simulator.Simulation
                 {
                     if (tiles[i].X == xBlock && tiles[i].Y == yBlock)
                     {
-                        actPosInMapListX = i % vehiclesMap.Count;
-                        actPosInMapListY = vehiclesMap[i % vehiclesMap.Count].Count;
+                        actPosInMapListX = i % vehiclesMap.Count - 1;
+                        actPosInMapListY = vehiclesMap[i % vehiclesMap.Count].Count - 1;
                     }
                     vehiclesMap[i % vehiclesMap.Count].Add(addStreetBlock(tiles[i].Gid, tiles[i].X, tiles[i].Y));
                 }
@@ -539,7 +544,7 @@ namespace Simulator.Simulation
                     if (tile.X == xBlock && tile.Y == yBlock)
                     {
                         actPosInMapListY = vehiclesMap.Count() + 1;
-                        actPosInMapListX = colums.Count() - 2;
+                        actPosInMapListX = colums.Count() - 1;
                     }
                     colums.Add(addStreetBlock(tile.Gid, tile.X, tile.Y));
                 }
