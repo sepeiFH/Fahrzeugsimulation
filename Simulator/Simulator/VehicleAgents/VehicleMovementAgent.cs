@@ -26,7 +26,7 @@ namespace Simulator.VehicleAgents
 
         private character Character { get; set; }
 
-        private Dictionary<side, List<double>> visibleMap;
+        //private Dictionary<side, List<double>> visibleMap;
 
         #region public Fields 
         public enum side
@@ -62,7 +62,7 @@ namespace Simulator.VehicleAgents
             int actPosInMapListY = -1;
             int actOffsetX = -1;
             int actOffsetY = -1;
-            List<List<StreetBlock>> vehiclesStreetMap = loadMap(vehicle.X, vehicle.Y, vehicle.Rotation, ref actPosInMapListX, ref actPosInMapListY, ref actOffsetX, ref actOffsetY);
+            List<List<StreetBlock>> vehiclesStreetMap = loadStreetMap(vehicle.X, vehicle.Y, vehicle.Rotation, ref actPosInMapListX, ref actPosInMapListY, ref actOffsetX, ref actOffsetY);
             //side destinationSide = routeDecision();
             moveVehicle(vehicle, vehiclesStreetMap, actPosInMapListX, actPosInMapListY, actOffsetX, actOffsetY);
         }
@@ -293,7 +293,7 @@ namespace Simulator.VehicleAgents
         #endregion
         #region simulation interaction
 
-        public virtual List<List<StreetBlock>> loadMap(double X, double Y, double rotation, ref int actPosX, ref int actPosY, ref int actOffSetX, ref int actOffsetY)
+        protected virtual void initFieldDirection()
         {
             if (mapFieldsInDirection == null)
             {
@@ -317,6 +317,20 @@ namespace Simulator.VehicleAgents
                 mapFieldsInDirection.Add(side.left, (int)Math.Ceiling(MaxVelocity));
                 mapFieldsInDirection.Add(side.right, (int)Math.Ceiling(MaxVelocity));
             }
+        }
+
+        public virtual List<DynamicBlock> loadDynamicBlockList(Vehicle vehicle)
+        {
+            initFieldDirection();
+            Simulation.Simulator simu = Simulation.Simulator.Instance;
+
+            List<DynamicBlock> dynamicList = simu.allDynamicObjectsInRange(vehicle.X, vehicle.Y, vehicle.Rotation, mapFieldsInDirection);
+            return dynamicList;
+        }
+
+        public virtual List<List<StreetBlock>> loadStreetMap(double X, double Y, double rotation, ref int actPosX, ref int actPosY, ref int actOffSetX, ref int actOffsetY)
+        {
+            initFieldDirection();
 
             Simulation.Simulator simu = Simulation.Simulator.Instance;
 
