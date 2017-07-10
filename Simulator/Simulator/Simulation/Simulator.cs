@@ -634,7 +634,7 @@ namespace Simulator.Simulation
         /// <param name="vehicleY">actual Y coordinates of the vehicle</param>
         /// <param name="rotation">actual rotation of the vehicle</param>
         /// <param name="directionDistances">Dictionary which contains the distances for the viewing range</param>
-        /// <returns>StreetBlock</returns>
+        /// <returns>SortedDictionary <double, List<DynamicBlock>></returns>
         public SortedDictionary<double, List<DynamicBlock>> allDynamicObjectsInRange(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances)
         {
             SortedDictionary<double, List<DynamicBlock>> dynamicBlocksWithDistance = new SortedDictionary<double, List<DynamicBlock>>();

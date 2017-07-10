@@ -66,9 +66,10 @@ namespace Simulator.VehicleAgents
             // load street map
             List<List<StreetBlock>> vehiclesStreetMap = loadStreetMap(vehicle.X, vehicle.Y, vehicle.Rotation, ref actPosInMapListX, ref actPosInMapListY, ref actOffsetX, ref actOffsetY);
             // load list of dynamic objects
-            SortedDictionary<double, List<DynamicBlock>> dynamicListWithDistance = loadDynamicBlockList(vehicle);
+            List<DynamicBlock> dynamicList = loadDynamicBlockList(vehicle);
+
             //side destinationSide = routeDecision();
-            moveVehicle(vehicle, vehiclesStreetMap, dynamicListWithDistance, actPosInMapListX, actPosInMapListY, actOffsetX, actOffsetY);
+            moveVehicle(vehicle, vehiclesStreetMap, dynamicList, actPosInMapListX, actPosInMapListY, actOffsetX, actOffsetY);
         }
 
         #region vehicle interaction
@@ -122,30 +123,6 @@ namespace Simulator.VehicleAgents
                 {
                     nextMove = CrossingDirection.None;
                 }
-
-                if (degreesToRotate > 0 && actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing)
-                {
-                    //MaxVelocity /= 6;
-                    /*
-                    vehicle.Rotation += 15;
-                    degreesToRotate -= 15;
-
-                    if (vehicle.Rotation == 360)
-                        vehicle.Rotation = 0;*/
-                }
-                else if (degreesToRotate < 0 && actualBlock.Direction == StreetDirection.Crossing && aheadBlock.Direction == StreetDirection.Crossing && actOffsetX >= 25)
-                {
-                    //MaxVelocity /= 6;
-                    /*
-                     if (vehicle.Rotation == 0)
-                        vehicle.Rotation = 360;
-
-                    vehicle.Rotation -= 15;
-                    degreesToRotate += 15;*/
-                }
-                //calcnewPosition(vehicle);
-                //calcNewVelocity();
-                //calcNewAccerleration(true, -1d);
             }
 
             if (degreesToRotate > 0 && degreesToRotate <= 90 && rotationAllowed)
@@ -181,16 +158,6 @@ namespace Simulator.VehicleAgents
             double roundSpeed = ActVelocity + ActAcceleration;
             if (vehicle.IsBroken)
                 return;
-            /*if (roundSpeed < MaxVelocity)
-            {
-                ActVelocity = roundSpeed;
-                ActAcceleration = MaxAcceleration;
-            }
-            else
-            {
-                ActVelocity = MaxVelocity;
-                ActAcceleration = 0;
-            }*/
 
             #endregion
 
@@ -206,29 +173,37 @@ namespace Simulator.VehicleAgents
                     {
                         Vehicle tempVehicle = (Vehicle)dynamicBlock;
                         // Fahrzeug fährt in gleiche Richtung, ist fahrfähig, hat geringere Geschwindigkeit und Distanz ist im Bremsbereich
-                        if (vehicle.Rotation.Equals(tempVehicle.Rotation) && !vehicle.IsBroken && vehicle.driver.ActVelocity > tempVehicle.driver.ActVelocity && isBlockInReactionSpan(calcDistanceForSameDir(vehicle, tempVehicle), vehicle, tempVehicle))
+                        if (!vehicle.IsBroken && vehicle.Rotation.Equals(tempVehicle.Rotation) && !reactedOnTrafficSign && vehicle.driver.ActVelocity > tempVehicle.driver.ActVelocity && isBlockInReactionSpan(dynamicBlockList.Key, vehicle, tempVehicle))
                         {
                             AllowedVelocity = vehicle.driver.ActVelocity;
+                        }
+                        // vehicle in front is broken, so check if second lane is free for driving beside the broken vehicle
+                        else if (vehicle.Rotation.Equals(tempVehicle.Rotation) && !reactedOnTrafficSign && isBlockInReactionSpan(dynamicBlockList.Key, vehicle, tempVehicle))
+                        {
+                            // check if lane is free
+                            //if ()
                         }
                     }
                     else if (dynamicBlock.GetType().Equals(typeof(TrafficLight)) && !Simulator.Simulation.Simulator.EmergencyModeActive && (vehicle.Rotation + 180) % 360 == dynamicBlock.Rotation && isDynamicBlockAhead(vehicle, dynamicBlock) && isBlockInReactionSpan(dynamicBlockList.Key, vehicle)
                         )
                     {
-                        //reactedOnTrafficSign = true;
                         if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Yellow))
                         {
                             AllowedVelocity = MaxVelocity;
                         }
                         else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Red))
                         {
+                            reactedOnTrafficSign = true;
                             AllowedVelocity = 0;
                         }
                         else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Green))
                         {
+                            reactedOnTrafficSign = false;
                             AllowedVelocity = MaxVelocity;
                         }
                         else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.YellowRed) && Character.Equals(character.aggresive))
                         {
+                            reactedOnTrafficSign = false;
                             AllowedVelocity = MaxVelocity;
                         }
                     }
@@ -240,7 +215,146 @@ namespace Simulator.VehicleAgents
             calcNewVelocity();
         }
 
-        private double calcDistanceForSameDir(Vehicle vehicle, Vehicle tempVehicle)
+        public virtual void moveVehicle(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, List<DynamicBlock> dynamicList, int actPosInMapListX, int actPosInMapListY, int actOffsetX, int actOffsetY)
+        {
+            double newX = vehicle.X;
+            double newY = vehicle.Y;
+
+            CrossingBlock crossingAhead = null;
+            StreetBlock lastBlock = null;
+            StreetBlock actualBlock = null;
+            StreetBlock aheadBlock = null;
+            #region react on street map
+            // find vehicle in his map
+            // If vehicle isn't on his own map, drive foreward to get into the simulationMap
+            if (actPosInMapListX > 0)
+            {
+                // calculate Blocks ahead and behind the vehicle
+                // only get last block if car drives without degrees to rotate
+                if (degreesToRotate == 0 && actPosInMapListY >= 0 && actPosInMapListX - 1 >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
+                    lastBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX - 1];
+                if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
+                    actualBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX];
+                if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX + 1)
+                    aheadBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 1];
+                if (actPosInMapListY >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX + 3 && vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3] != null && vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3].GetType() == typeof(CrossingBlock))
+                    crossingAhead = (CrossingBlock)vehiclesStreetMap[actPosInMapListY][actPosInMapListX + 3];
+            }
+            // if there is a crossing ahead and there is no next Move, set nextMove and degrees to rotate
+            if (crossingAhead != null && nextMove == CrossingDirection.None)
+            {
+                nextMove = crossingAhead.PossibleCrosDirs[rand.Next(crossingAhead.PossibleCrosDirs.Count - 1)];
+                if (nextMove == CrossingDirection.Left)
+                    degreesToRotate = -90;
+                else if (nextMove == CrossingDirection.Right)
+                    degreesToRotate = 90;
+            }
+            if (aheadBlock != null && actualBlock != null)
+            {
+                if (actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Right && ((actOffsetX < 15 && (vehicle.Rotation == 0 || vehicle.Rotation == 180)) || (actOffsetY > 15 && (vehicle.Rotation == 90 || vehicle.Rotation == 270))))
+                {
+                    rotationAllowed = true;
+                    //calcNewAccerleration(false, true, -1d);
+                }
+                if (actualBlock.Direction == StreetDirection.Crossing && actualBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left && ((actOffsetX < 15 && (vehicle.Rotation == 0 || vehicle.Rotation == 180)) || (actOffsetY > 15 && (vehicle.Rotation == 90 || vehicle.Rotation == 270))))
+                {
+                    rotationAllowed = true;
+                    //calcNewAccerleration(false, true, -1d);
+                }
+                if (lastBlock != null && lastBlock.Direction == StreetDirection.Crossing && actualBlock.Direction != StreetDirection.Crossing && nextMove == CrossingDirection.Straight)
+                {
+                    nextMove = CrossingDirection.None;
+                }
+            }
+
+            if (degreesToRotate > 0 && degreesToRotate <= 90 && rotationAllowed)
+            {
+                if (vehicle.Rotation == 360)
+                    vehicle.Rotation = 0;
+
+                vehicle.Rotation += 15;
+                degreesToRotate -= 15;
+
+                if (degreesToRotate == 0)
+                {
+                    nextMove = CrossingDirection.None;
+                    rotationAllowed = false;
+                    //MaxVelocity *= 6;
+                }
+            }
+            else if (degreesToRotate < 0 && degreesToRotate >= -90 && rotationAllowed)
+            {
+                if (vehicle.Rotation == 0)
+                    vehicle.Rotation = 360;
+
+                vehicle.Rotation -= 15;
+                degreesToRotate += 15;
+                if (degreesToRotate == 0)
+                {
+                    nextMove = CrossingDirection.None;
+                    rotationAllowed = false;
+                    //MaxVelocity *= 6;
+                }
+            }
+
+            double roundSpeed = ActVelocity + ActAcceleration;
+            if (vehicle.IsBroken)
+                return;
+
+            #endregion
+
+            #region react on dynamic objects
+            //List<double> nearestDynamicObject = dynamicList.Keys;
+            bool reactedOnTrafficSign = false;
+
+            foreach (DynamicBlock dynamicBlock in dynamicList)
+            {
+                if (dynamicBlock.GetType().Equals(typeof(Vehicle)))
+                {
+                    Vehicle tempVehicle = (Vehicle)dynamicBlock;
+                    // Fahrzeug fährt in gleiche Richtung, ist fahrfähig, hat geringere Geschwindigkeit und Distanz ist im Bremsbereich
+                    if (!vehicle.IsBroken && vehicle.Rotation.Equals(tempVehicle.Rotation) && !reactedOnTrafficSign && vehicle.driver.ActVelocity > tempVehicle.driver.ActVelocity && isBlockInReactionSpan(calcDistanceForSameDir(vehicle, tempVehicle), vehicle, tempVehicle))
+                    {
+                        AllowedVelocity = vehicle.driver.ActVelocity;
+                    }
+                    // vehicle in front is broken, so check if second lane is free for driving beside the broken vehicle
+                    else if (vehicle.Rotation.Equals(tempVehicle.Rotation) && !reactedOnTrafficSign && isBlockInReactionSpan(calcDistanceForSameDir(vehicle, tempVehicle), vehicle, tempVehicle))
+                    {
+                        // check if lane is free
+                        //if ()
+                    }
+                }
+                else if (dynamicBlock.GetType().Equals(typeof(TrafficLight)) && !Simulator.Simulation.Simulator.EmergencyModeActive && (vehicle.Rotation + 180) % 360 == dynamicBlock.Rotation && isDynamicBlockAhead(vehicle, dynamicBlock) && isBlockInReactionSpan(calcDistanceForSameDir(vehicle, dynamicBlock), vehicle)
+                    )
+                {
+                    if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Yellow))
+                    {
+                        AllowedVelocity = MaxVelocity;
+                    }
+                    else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Red))
+                    {
+                        reactedOnTrafficSign = true;
+                        AllowedVelocity = 0;
+                    }
+                    else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Green))
+                    {
+                        reactedOnTrafficSign = false;
+                        AllowedVelocity = MaxVelocity;
+                    }
+                    else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.YellowRed) && Character.Equals(character.aggresive))
+                    {
+                        reactedOnTrafficSign = false;
+                        AllowedVelocity = MaxVelocity;
+                    }
+                }
+            }
+            #endregion
+
+            calcnewPosition(vehicle);
+            calcNewVelocity();
+        }
+
+        private double calcDistanceForSameDir(Vehicle vehicle, DynamicBlock tempVehicle)
         {
             return 0.0;
         }
@@ -415,13 +529,19 @@ namespace Simulator.VehicleAgents
             }
         }
 
-        public virtual SortedDictionary<double, List<DynamicBlock>> loadDynamicBlockList(Vehicle vehicle)
+        /*public virtual SortedDictionary<double, List<DynamicBlock>> loadDynamicBlockList(Vehicle vehicle)
         {
             initFieldDirection();
             Simulation.Simulator simu = Simulation.Simulator.Instance;
 
             SortedDictionary<double, List<DynamicBlock>> dynamicListWithDistance = simu.allDynamicObjectsInRange(vehicle.X, vehicle.Y, vehicle.Rotation, mapFieldsInDirection);
             return dynamicListWithDistance;
+        }*/
+        public virtual List<DynamicBlock> loadDynamicBlockList(Vehicle vehicle)
+        {
+            initFieldDirection();
+
+            return Simulation.Simulator.Instance.allDynamicObjects;
         }
 
         public virtual List<List<StreetBlock>> loadStreetMap(double X, double Y, double rotation, ref int actPosX, ref int actPosY, ref int actOffSetX, ref int actOffsetY)
