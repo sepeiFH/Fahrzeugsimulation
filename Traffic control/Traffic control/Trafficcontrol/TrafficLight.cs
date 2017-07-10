@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Traffic_control.Trafficcontrol
+﻿namespace Traffic_control.Trafficcontrol
 {
     public class TrafficLight
     {
@@ -75,7 +73,7 @@ namespace Traffic_control.Trafficcontrol
                     Status = LightStatus.Red;
                     break;
             }
-            Console.WriteLine("Ampel " + ID + " hat auf " + Status + " geschalten");
+            //Console.WriteLine("Ampel " + ID + " hat auf " + Status + " geschalten");
         }
 
         /// <summary>

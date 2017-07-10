@@ -12,6 +12,7 @@ namespace Simulator.VehicleAgents
         public double MaxAcceleration { get; set; }
         public double MaxDeceleration { get; set; }
         public double ActVelocity { get; set; }
+        public double AllowedVelocity { get; set; }
         public double ActAcceleration { get; set; }
         private bool debug = false;
         Dictionary<side, int> mapFieldsInDirection;
@@ -62,13 +63,16 @@ namespace Simulator.VehicleAgents
             int actPosInMapListY = -1;
             int actOffsetX = -1;
             int actOffsetY = -1;
+            // load street map
             List<List<StreetBlock>> vehiclesStreetMap = loadStreetMap(vehicle.X, vehicle.Y, vehicle.Rotation, ref actPosInMapListX, ref actPosInMapListY, ref actOffsetX, ref actOffsetY);
+            // load list of dynamic objects
+            SortedDictionary<double, List<DynamicBlock>> dynamicListWithDistance = loadDynamicBlockList(vehicle);
             //side destinationSide = routeDecision();
-            moveVehicle(vehicle, vehiclesStreetMap, actPosInMapListX, actPosInMapListY, actOffsetX, actOffsetY);
+            moveVehicle(vehicle, vehiclesStreetMap, dynamicListWithDistance, actPosInMapListX, actPosInMapListY, actOffsetX, actOffsetY);
         }
 
         #region vehicle interaction
-        public virtual void moveVehicle(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, int actPosInMapListX, int actPosInMapListY, int actOffsetX, int actOffsetY)
+        public virtual void moveVehicle(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, SortedDictionary<double, List<DynamicBlock>> dynamicList, int actPosInMapListX, int actPosInMapListY, int actOffsetX, int actOffsetY)
         {
             double newX = vehicle.X;
             double newY = vehicle.Y;
@@ -77,6 +81,7 @@ namespace Simulator.VehicleAgents
             StreetBlock lastBlock = null;
             StreetBlock actualBlock = null;
             StreetBlock aheadBlock = null;
+            #region react on street map
             // find vehicle in his map
             // If vehicle isn't on his own map, drive foreward to get into the simulationMap
             if (actPosInMapListX > 0)
@@ -186,31 +191,97 @@ namespace Simulator.VehicleAgents
                 ActVelocity = MaxVelocity;
                 ActAcceleration = 0;
             }*/
+
+            #endregion
+
+            #region react on dynamic objects
+            //List<double> nearestDynamicObject = dynamicList.Keys;
+            bool reactedOnTrafficSign = false;
+
+            foreach (var dynamicBlockList in dynamicList)
+            {
+                foreach (DynamicBlock dynamicBlock in dynamicBlockList.Value)
+                {
+                    if (dynamicBlock.GetType().Equals(typeof(Vehicle)))
+                    {
+                        Vehicle tempVehicle = (Vehicle)dynamicBlock;
+                        // Fahrzeug fährt in gleiche Richtung, ist fahrfähig, hat geringere Geschwindigkeit und Distanz ist im Bremsbereich
+                        if (vehicle.Rotation.Equals(tempVehicle.Rotation) && !vehicle.IsBroken && vehicle.driver.ActVelocity > tempVehicle.driver.ActVelocity && isBlockInReactionSpan(calcDistanceForSameDir(vehicle, tempVehicle), vehicle, tempVehicle))
+                        {
+                            AllowedVelocity = vehicle.driver.ActVelocity;
+                        }
+                    }
+                    else if (dynamicBlock.GetType().Equals(typeof(TrafficLight)) && !Simulator.Simulation.Simulator.EmergencyModeActive && (vehicle.Rotation + 180) % 360 == dynamicBlock.Rotation && isDynamicBlockAhead(vehicle, dynamicBlock) && isBlockInReactionSpan(dynamicBlockList.Key, vehicle)
+                        )
+                    {
+                        //reactedOnTrafficSign = true;
+                        if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Yellow))
+                        {
+                            AllowedVelocity = MaxVelocity;
+                        }
+                        else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Red))
+                        {
+                            AllowedVelocity = 0;
+                        }
+                        else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.Green))
+                        {
+                            AllowedVelocity = MaxVelocity;
+                        }
+                        else if (((TrafficLight)dynamicBlock).Status.Equals(TrafficLight.LightStatus.YellowRed) && Character.Equals(character.aggresive))
+                        {
+                            AllowedVelocity = MaxVelocity;
+                        }
+                    }
+                }
+            }
+            #endregion
+
             calcnewPosition(vehicle);
             calcNewVelocity();
         }
 
-        private void moveVehicle2(Vehicle vehicle, List<List<StreetBlock>> vehiclesStreetMap, int actPosInMapListX, int actPosInMapListY, int actOffsetX, int actOffsetY)
+        private double calcDistanceForSameDir(Vehicle vehicle, Vehicle tempVehicle)
         {
-            /*
-            if (vehicle.IsBroken)
-                return;
-            double doublePixels = 5;
-            if (count++ % 2 == 0)
-            {
-                vehicle.Rotation += .25;
-                count = 2;
-            }
+            return 0.0;
+        }
 
-            double yy = vehicle.Y + doublePixels;
-            double angle = (vehicle.Rotation + 90) % 360;
+        private bool isBlockInReactionSpan(double distance, Vehicle vehicle)
+        {
 
-            double radiants = angle * (Math.PI / 180.0d);
-            double newX = (Math.Cos(radiants) * (double)(vehicle.X - vehicle.X) - Math.Sin(radiants) * (double)(yy - vehicle.Y) + vehicle.X);
-            double newY = (Math.Sin(radiants) * (double)(vehicle.X - vehicle.X) + Math.Cos(radiants) * (double)(yy - vehicle.Y) + vehicle.Y);
+            if (distance < vehicle.Length && distance - ((ActVelocity * ActVelocity) / (2 * MaxDeceleration)) >= 0 || ActVelocity == 0)
+                return true;
 
-            vehicle.X = newX;
-            vehicle.Y = newY;*/
+            return false;
+        }
+
+        private bool isBlockInReactionSpan(double distance, Vehicle ownVehicle, Vehicle otherVehicle)
+        {
+            if (distance < ownVehicle.Length && distance - ((ActVelocity * ActVelocity) / (2 * MaxDeceleration)) >= 0 || ActVelocity == 0)
+                return true;
+
+            return false;
+        }
+
+        private bool isDynamicBlockAhead(Vehicle vehicle, DynamicBlock dynamicBlock)
+        {
+            bool isAhead = false;
+            // mathematical way:
+
+            // tryout way
+            // 0 degree
+            if ((vehicle.Rotation >= 0 && vehicle.Rotation < 45 || vehicle.Rotation >= 315 && vehicle.Rotation < 360) && vehicle.X > dynamicBlock.X)
+                isAhead = true;
+            // around 90 degree
+            else if ((vehicle.Rotation >= 45 && vehicle.Rotation < 135) && vehicle.Y < dynamicBlock.Y)
+                isAhead = true;
+            // around 180 degree
+            else if ((vehicle.Rotation >= 135 && vehicle.Rotation < 225) && vehicle.X < dynamicBlock.X)
+                isAhead = true;
+            // 270 degree
+            else if (vehicle.Y > dynamicBlock.Y)
+                isAhead = true;
+
+            return isAhead;
         }
 
         private void calcnewPosition(Vehicle vehicle)
@@ -233,26 +304,51 @@ namespace Simulator.VehicleAgents
         private void calcNewVelocity()
         {
             double newVelocity = 0;
-
-            if (ActVelocity == MaxVelocity)
+            if (MaxVelocity < AllowedVelocity)
             {
-                newVelocity = ActVelocity;
-                calcNewAccerleration(false, false, -1d);
+                if (ActVelocity == MaxVelocity)
+                {
+                    newVelocity = ActVelocity;
+                    calcNewAccerleration(false, false, -1d);
+                }
+                else if (ActVelocity > MaxVelocity)
+                {
+                    newVelocity = ActVelocity + ActAcceleration;
+                    calcNewAccerleration(false, true, -1d);
+                }
+                else if (ActVelocity + ActAcceleration <= MaxVelocity)
+                {
+                    newVelocity = ActVelocity + ActAcceleration;
+                    calcNewAccerleration(true, false, -1d);
+                }
+                else if (ActVelocity + ActAcceleration > MaxVelocity)
+                {
+                    newVelocity = MaxVelocity;
+                    calcNewAccerleration(false, false, -1d);
+                }
             }
-            else if (ActVelocity > MaxVelocity)
+            else
             {
-                newVelocity = ActVelocity + ActAcceleration;
-                calcNewAccerleration(false, true, -1d);
-            }
-            else if (ActVelocity + ActAcceleration <= MaxVelocity)
-            {
-                newVelocity = ActVelocity + ActAcceleration;
-                calcNewAccerleration(true, false, -1d);
-            }
-            else if (ActVelocity + ActAcceleration > MaxVelocity)
-            {
-                newVelocity = MaxVelocity;
-                calcNewAccerleration(false, false, -1d);
+                if (ActVelocity == AllowedVelocity)
+                {
+                    newVelocity = ActVelocity;
+                    calcNewAccerleration(false, false, -1d);
+                }
+                else if (ActVelocity > AllowedVelocity)
+                {
+                    newVelocity = ActVelocity + ActAcceleration;
+                    calcNewAccerleration(false, true, -1d);
+                }
+                else if (ActVelocity + ActAcceleration <= AllowedVelocity)
+                {
+                    newVelocity = ActVelocity + ActAcceleration;
+                    calcNewAccerleration(true, false, -1d);
+                }
+                else if (ActVelocity + ActAcceleration > AllowedVelocity)
+                {
+                    newVelocity = AllowedVelocity;
+                    calcNewAccerleration(false, false, -1d);
+                }
             }
 
             ActVelocity = newVelocity;
@@ -319,13 +415,13 @@ namespace Simulator.VehicleAgents
             }
         }
 
-        public virtual List<DynamicBlock> loadDynamicBlockList(Vehicle vehicle)
+        public virtual SortedDictionary<double, List<DynamicBlock>> loadDynamicBlockList(Vehicle vehicle)
         {
             initFieldDirection();
             Simulation.Simulator simu = Simulation.Simulator.Instance;
 
-            List<DynamicBlock> dynamicList = simu.allDynamicObjectsInRange(vehicle.X, vehicle.Y, vehicle.Rotation, mapFieldsInDirection);
-            return dynamicList;
+            SortedDictionary<double, List<DynamicBlock>> dynamicListWithDistance = simu.allDynamicObjectsInRange(vehicle.X, vehicle.Y, vehicle.Rotation, mapFieldsInDirection);
+            return dynamicListWithDistance;
         }
 
         public virtual List<List<StreetBlock>> loadStreetMap(double X, double Y, double rotation, ref int actPosX, ref int actPosY, ref int actOffSetX, ref int actOffsetY)

@@ -111,7 +111,7 @@ namespace Traffic_control.Trafficcontrol
                 }
                 else
                 {
-                    Task.Delay(10);
+                    //Task.Delay(10);
                 }
 
             }
@@ -189,8 +189,14 @@ namespace Traffic_control.Trafficcontrol
                     foreach (TrafficLight light in lights)
                         simulationTrafficLights.Add(new ServiceReference1.TrafficLightContract() { ID = light.ID, Status = convertLightStatus(light.Status) });
             }
+            try
+            {
+                clientSimulator.SetTrafficLightUpdate(simulationTrafficLights.ToArray());
+            }
+            catch (Exception e)
+            {
 
-            clientSimulator.SetTrafficLightUpdate(simulationTrafficLights.ToArray());
+            }
         }
 
         /// <summary>

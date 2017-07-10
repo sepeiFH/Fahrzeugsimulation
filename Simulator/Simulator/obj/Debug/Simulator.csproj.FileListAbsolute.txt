@@ -29,3 +29,4 @@ E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\AWSSDK.Core.xml
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\AWSSDK.SQS.pdb
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\AWSSDK.SQS.xml
 E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\bin\Debug\Newtonsoft.Json.xml
+E:\FHS\SA-LAB\Fahrzeugsimulation\Simulator\Simulator\obj\Debug\Simulator.csprojResolveAssemblyReference.cache

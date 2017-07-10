@@ -355,7 +355,10 @@ namespace Simulator.Simulation
 
                     foreach (DynamicBlock dynObject in allDynamicObjects)
                     {
+                        //Thread updateThread = new Thread(dynObject.update);
+                        //updateThread.Start();
                         dynObject.update();
+
                         if (dynObject.X > (map.Width + 3) * 32 && dynObject.GetType().Equals(typeof(Base.Vehicle)))
                         {
                             var actVehicle = (Base.Vehicle)dynObject;
@@ -385,8 +388,8 @@ namespace Simulator.Simulation
                     }
                     stopWatch.Restart();
                 }
-                else
-                    Thread.Sleep(10);
+                //else
+                //Thread.Sleep(10);
 
             }
         }
@@ -632,9 +635,9 @@ namespace Simulator.Simulation
         /// <param name="rotation">actual rotation of the vehicle</param>
         /// <param name="directionDistances">Dictionary which contains the distances for the viewing range</param>
         /// <returns>StreetBlock</returns>
-        public List<DynamicBlock> allDynamicObjectsInRange(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances)
+        public SortedDictionary<double, List<DynamicBlock>> allDynamicObjectsInRange(double vehicleX, double vehicleY, double rotation, Dictionary<VehicleMovementAgent.side, int> directionDistances)
         {
-            List<DynamicBlock> vehiclesDynamicBlocks = new List<DynamicBlock>();
+            SortedDictionary<double, List<DynamicBlock>> dynamicBlocksWithDistance = new SortedDictionary<double, List<DynamicBlock>>();
             // around 0 degree
             if (rotation >= 0 && rotation < 45 || rotation >= 315 && rotation < 360)
             {
@@ -643,8 +646,25 @@ namespace Simulator.Simulation
                 double leftBorder = vehicleY + directionDistances[VehicleMovementAgent.side.left] * 32;
                 double rightBorder = vehicleY - directionDistances[VehicleMovementAgent.side.right] * 32;
 
-                vehiclesDynamicBlocks.AddRange(allDynamicObjects.FindAll(x => (x.X > forewardBorder && x.X < backwardBorder) &&
-                                                                        (x.Y > rightBorder && x.Y < leftBorder)));
+                //vehiclesDynamicBlocks.AddRange(
+                foreach (var block in allDynamicObjects.FindAll(x => (x.X > forewardBorder && x.X < backwardBorder) &&
+                                                                         (x.Y > rightBorder && x.Y < leftBorder) &&
+                                                                         (x.X != vehicleX && x.Y != vehicleY)))
+                {
+                    double distance = Math.Sqrt(Math.Pow(vehicleX - block.X, 2) + Math.Pow(vehicleY - block.Y, 2));
+                    if (!dynamicBlocksWithDistance.ContainsKey(distance))
+                    {
+                        List<DynamicBlock> tempList = new List<DynamicBlock>();
+                        tempList.Add(block);
+                        dynamicBlocksWithDistance.Add(distance, tempList);
+                    }
+                    else
+                    {
+                        List<DynamicBlock> templist;
+                        dynamicBlocksWithDistance.TryGetValue(distance, out templist);
+                        templist.Add(block);
+                    }
+                }
             }
             // around 90 degree
             else if (rotation >= 45 && rotation < 135)
@@ -653,9 +673,24 @@ namespace Simulator.Simulation
                 double forewardBorder = vehicleY - directionDistances[VehicleMovementAgent.side.foreward] * 32;
                 double leftBorder = vehicleX - directionDistances[VehicleMovementAgent.side.left] * 32;
                 double rightBorder = vehicleX + directionDistances[VehicleMovementAgent.side.right] * 32;
-                vehiclesDynamicBlocks.AddRange(allDynamicObjects.FindAll(x => (x.X >= leftBorder && x.X <= rightBorder) &&
-                                                                        (x.Y >= forewardBorder && x.Y <= backwardBorder)));
-
+                foreach (var block in allDynamicObjects.FindAll(x => (x.X >= leftBorder && x.X <= rightBorder) &&
+                                                                        (x.Y >= forewardBorder && x.Y <= backwardBorder) &&
+                                                                        (x.X != vehicleX && x.Y != vehicleY)))
+                {
+                    double distance = Math.Sqrt(Math.Pow(vehicleX - block.X, 2) + Math.Pow(vehicleY - block.Y, 2));
+                    if (!dynamicBlocksWithDistance.ContainsKey(distance))
+                    {
+                        List<DynamicBlock> tempList = new List<DynamicBlock>();
+                        tempList.Add(block);
+                        dynamicBlocksWithDistance.Add(distance, tempList);
+                    }
+                    else
+                    {
+                        List<DynamicBlock> templist;
+                        dynamicBlocksWithDistance.TryGetValue(distance, out templist);
+                        templist.Add(block);
+                    }
+                }
             }
             // around 180 degree
             else if (rotation >= 135 && rotation < 225)
@@ -664,8 +699,24 @@ namespace Simulator.Simulation
                 double forewardBorder = vehicleX + directionDistances[VehicleMovementAgent.side.foreward] * 32;
                 double leftBorder = vehicleY - directionDistances[VehicleMovementAgent.side.left] * 32;
                 double rightBorder = vehicleY + directionDistances[VehicleMovementAgent.side.right] * 32;
-                vehiclesDynamicBlocks.AddRange(allDynamicObjects.FindAll(x => (x.X >= backwardBorder && x.X <= forewardBorder) &&
-                                                                        (x.Y >= leftBorder && x.Y <= rightBorder)));
+                foreach (var block in allDynamicObjects.FindAll(x => (x.X >= backwardBorder && x.X <= forewardBorder) &&
+                                                                        (x.Y >= leftBorder && x.Y <= rightBorder) &&
+                                                                        (x.X != vehicleX && x.Y != vehicleY)))
+                {
+                    double distance = Math.Sqrt(Math.Pow(vehicleX - block.X, 2) + Math.Pow(vehicleY - block.Y, 2));
+                    if (!dynamicBlocksWithDistance.ContainsKey(distance))
+                    {
+                        List<DynamicBlock> tempList = new List<DynamicBlock>();
+                        tempList.Add(block);
+                        dynamicBlocksWithDistance.Add(distance, tempList);
+                    }
+                    else
+                    {
+                        List<DynamicBlock> templist;
+                        dynamicBlocksWithDistance.TryGetValue(distance, out templist);
+                        templist.Add(block);
+                    }
+                }
             }
             // around 270 degree
             else
@@ -674,11 +725,29 @@ namespace Simulator.Simulation
                 double forewardBorder = vehicleY + directionDistances[VehicleMovementAgent.side.foreward] * 32;
                 double leftBorder = vehicleX + directionDistances[VehicleMovementAgent.side.left] * 32;
                 double rightBorder = vehicleX - directionDistances[VehicleMovementAgent.side.right] * 32;
-                vehiclesDynamicBlocks.AddRange(allDynamicObjects.FindAll(x => (x.X >= rightBorder && x.X <= leftBorder) &&
-                                                                        (x.Y >= backwardBorder && x.Y <= forewardBorder)));
+
+
+                foreach (var block in allDynamicObjects.FindAll(x => (x.X >= rightBorder && x.X <= leftBorder) &&
+                                                                        (x.Y >= backwardBorder && x.Y <= forewardBorder) &&
+                                                                        (x.X != vehicleX && x.Y != vehicleY)))
+                {
+                    double distance = Math.Sqrt(Math.Pow(vehicleX - block.X, 2) + Math.Pow(vehicleY - block.Y, 2));
+                    if (!dynamicBlocksWithDistance.ContainsKey(distance))
+                    {
+                        List<DynamicBlock> tempList = new List<DynamicBlock>();
+                        tempList.Add(block);
+                        dynamicBlocksWithDistance.Add(distance, tempList);
+                    }
+                    else
+                    {
+                        List<DynamicBlock> templist;
+                        dynamicBlocksWithDistance.TryGetValue(distance, out templist);
+                        templist.Add(block);
+                    }
+                }
             }
 
-            return vehiclesDynamicBlocks;
+            return dynamicBlocksWithDistance;
         }
 
         #endregion

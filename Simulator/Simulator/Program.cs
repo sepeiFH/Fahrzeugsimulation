@@ -47,6 +47,7 @@ namespace Simulator
                 Console.WriteLine("The service is ready at {0}", baseAddress);
                 //Console.WriteLine("Press <Enter> to stop the service.");
                 Random rand = new Random();
+                int id = 0;
                 while (true)
                 {
                     Console.WriteLine("Add Vehicle: GID, maxVelocity, X, Y, Rotation");
@@ -57,7 +58,8 @@ namespace Simulator
                     double vehicleX = double.Parse(inputList[2]);
                     double vehicleY = double.Parse(inputList[3]);
                     double vehicleRotation = double.Parse(inputList[4]);
-                    createVehicle(rand, vehicleGID, maxVelocity, vehicleX, vehicleY, vehicleRotation);
+                    createVehicle(id, rand, vehicleGID, maxVelocity, vehicleX, vehicleY, vehicleRotation);
+                    id++;
                 }
 
                 // Close the ServiceHost.
@@ -66,11 +68,12 @@ namespace Simulator
         }
 
         // Test-Method
-        private static void createVehicle(Random rand, int vehicleGID, double maxVelocity, double vehicleX, double vehicleY, double vehicleRotation)
+        private static void createVehicle(int id, Random rand, int vehicleGID, double maxVelocity, double vehicleX, double vehicleY, double vehicleRotation)
         {
             ConfigVehicle tempVehicle = Program.settings.Vehicles.Find(x => x.GID == vehicleGID);
             Vehicle vehicle = new Vehicle(rand, vehicleGID, maxVelocity, tempVehicle.MaxAcceleration, tempVehicle.MaxDeceleration)
             {
+                ID = id,
                 Rotation = vehicleRotation,
                 X = vehicleX,
                 Y = vehicleY,
