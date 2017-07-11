@@ -388,8 +388,8 @@ namespace Simulator.Simulation
                     }
                     stopWatch.Restart();
                 }
-                //else
-                //Thread.Sleep(10);
+                else
+                    Thread.Sleep(10);
 
             }
         }

@@ -59,6 +59,10 @@ namespace Simulator.Simulation.Base
             driver.AllowedVelocity = (rawVelocity * 10) / Program.settings.Takt;
         }
 
+        /// <summary>
+        /// Method to run the update/atc method
+        /// </summary>
+        /// <returns>void</returns>
         public override void update()
         {
             driver.act(this);

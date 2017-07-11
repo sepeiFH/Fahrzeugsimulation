@@ -111,7 +111,7 @@ namespace Traffic_control.Trafficcontrol
                 }
                 else
                 {
-                    //Task.Delay(10);
+                    Thread.Sleep(10);
                 }
 
             }
