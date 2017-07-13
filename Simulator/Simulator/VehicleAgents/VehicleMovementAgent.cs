@@ -280,12 +280,10 @@ namespace Simulator.VehicleAgents
                     if (actualBlock.GetType() == typeof(CrossingBlock) && aheadBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Right && ((actOffsetX < 15 && (vehicle.Rotation == 0 || vehicle.Rotation == 180)) || (actOffsetY > 15 && (vehicle.Rotation == 90 || vehicle.Rotation == 270))))
                     {
                         rotationAllowed = true;
-                        //calcNewAccerleration(false, true, -1d);
                     }
                     if (actualBlock.Direction == StreetDirection.Crossing && actualBlock.Direction == StreetDirection.Crossing && nextMove == CrossingDirection.Left && ((actOffsetX < 15 && (vehicle.Rotation == 0 || vehicle.Rotation == 180)) || (actOffsetY > 15 && (vehicle.Rotation == 90 || vehicle.Rotation == 270))))
                     {
                         rotationAllowed = true;
-                        //calcNewAccerleration(false, true, -1d);
                     }
                     if (lastBlock != null && lastBlock.Direction == StreetDirection.Crossing && actualBlock.Direction != StreetDirection.Crossing && nextMove == CrossingDirection.Straight)
                     {
@@ -304,7 +302,6 @@ namespace Simulator.VehicleAgents
                     {
                         nextMove = CrossingDirection.None;
                         rotationAllowed = false;
-                        //MaxVelocity *= 6;
                     }
                 }
                 else if (degreesToRotate < 0 && degreesToRotate >= -90 && rotationAllowed)
@@ -318,7 +315,6 @@ namespace Simulator.VehicleAgents
                     {
                         nextMove = CrossingDirection.None;
                         rotationAllowed = false;
-                        //MaxVelocity *= 6;
                     }
                 }
 
@@ -327,18 +323,17 @@ namespace Simulator.VehicleAgents
                 #endregion
 
                 #region react on dynamic objects
-                //List<double> nearestDynamicObject = dynamicList.Keys;
 
                 reactedDistance = 2000;
                 bool reactedOnDynObjact = false;
-                foreach (DynamicBlock dynamicBlock in dynamicList)//.FindAll(x => x.X >= ))
+                foreach (DynamicBlock dynamicBlock in dynamicList)
                 {
                     double actDistance = calcDistanceForSameDir(vehicle, dynamicBlock);
                     if (dynamicBlock.GetType().Equals(typeof(Vehicle)) && actDistance < reactedDistance)
                     {
                         Vehicle tempVehicle = (Vehicle)dynamicBlock;
                         reactedDistance = actDistance;
-                        // Fahrzeug fährt in gleiche Richtung, ist fahrfähig, hat geringere Geschwindigkeit und Distanz ist im Bremsbereich
+                        // vehicle drivs in same direction, can drive/is not broken, and has a smaler speed and his distance is in breaking distance
                         if (!vehicle.IsBroken && vehicle.Rotation.Equals(tempVehicle.Rotation) && this.ActVelocity > tempVehicle.driver.ActVelocity && isBlockInReactionSpan(actDistance, vehicle, tempVehicle))
                         {
                             AllowedVelocity = tempVehicle.driver.ActVelocity;
@@ -351,18 +346,10 @@ namespace Simulator.VehicleAgents
                             distanceTodriveBeside = tempVehicle.Length + vehicle.Length + actDistance;
                             switchLaneCount = 0;
                             switchLaneStartRotation = vehicle.Rotation;
-                            //moveLeftOrRight = true;
-                            // check if lane is free
+
+                            // TODO: check if lane is free
                             //if ()
                         }
-                        // drive vehicle back to the origin lane
-                        /*else if (tempVehicle.IsBroken && vehicle.Rotation.Equals(tempVehicle.Rotation) && isBlockbeside(vehicle, tempVehicle))
-                        {
-                            reactonBrokenVehicleModeOn = true;
-                            //moveLeftOrRight = false;
-                            // check if lane is free
-                            //if ()
-                        }*/
                     }
                     else if (dynamicBlock.GetType().Equals(typeof(TrafficLight)) && !Simulator.Simulation.Simulator.EmergencyModeActive && vehicle.Rotation == ((dynamicBlock.Rotation + 180) % 360) && isDynamicBlockAhead(vehicle, dynamicBlock) && isBlockInReactionSpan(actDistance, vehicle) && actDistance < reactedDistance)
                     {
@@ -532,32 +519,7 @@ namespace Simulator.VehicleAgents
                     vehicle.Rotation = switchLaneStartRotation;
                     reactonBrokenVehicleModeOn = false;
                 }
-
-                /* old/calculation version
-                // get actual streetBlock
-                if (actPosInMapListY >= 0 && actPosInMapListX >= 0 && vehiclesStreetMap[actPosInMapListY].Count - 1 >= actPosInMapListX)
-                    actualBlock = vehiclesStreetMap[actPosInMapListY][actPosInMapListX];
-                if (actualBlock != null)
-                {
-                    // check if vehicle and street are in same direction
-                    if (degreesToRotate == 0 && (actualBlock.Direction == StreetDirection.LeftToRight && vehicle.Rotation == 0 || actualBlock.Direction == StreetDirection.RightToLeft && vehicle.Rotation == 180 ||
-                        actualBlock.Direction == StreetDirection.BottomToTop && vehicle.Rotation == 90 || actualBlock.Direction == StreetDirection.TopToBottom && vehicle.Rotation == 270))
-                    {
-                        degreesToRotate = 45;
-                        rotationAllowed = true;
-                    }
-
-                    // check if vehicle and street are in opposite direction
-                    else if (degreesToRotate == 0 && (actualBlock.Direction == StreetDirection.LeftToRight && vehicle.Rotation == 135 || actualBlock.Direction == StreetDirection.RightToLeft && vehicle.Rotation == 225 ||
-                        actualBlock.Direction == StreetDirection.BottomToTop && vehicle.Rotation == 315 || actualBlock.Direction == StreetDirection.TopToBottom && vehicle.Rotation == 45))
-                    {
-                        degreesToRotate = -45;
-                        rotationAllowed = true;
-                    }
-                }*/
             }
-
-
         }
 
         /// <summary>
@@ -587,7 +549,6 @@ namespace Simulator.VehicleAgents
                     return Math.Sqrt(Math.Pow((vehicle.X + vehicle.Length / 2) - block.X, 2) + Math.Pow(vehicle.Y - block.Y, 2)) - vehicle.Length / 2 - ((Vehicle)block).Width / 2;
             }
             return 0;
-            //return Math.Sqrt(Math.Pow((vehicle.X + vehicle.Length / 2) - block.X, 2) + Math.Pow(vehicle.Y - block.Y, 2));
         }
 
         /// <summary>
@@ -646,34 +607,6 @@ namespace Simulator.VehicleAgents
                 isAhead = true;
 
             return isAhead;
-        }
-
-        /// <summary>
-        /// Method to check if a dynamic block is beside of the vehicle
-        /// </summary>
-        /// <param name="vehicle">actual vehicle to which the vehicle agent belongs</param>
-        /// <param name="dynamicBlock">dynamic block which should be checked</param>
-        /// <returns>bool</returns>
-        private bool isBlockbeside(Vehicle vehicle, Vehicle dynamicBlock)
-        {
-            bool isBeside = false;
-            // mathematical way:
-
-            // tryout way
-            // 0 degree
-            if ((vehicle.Rotation >= 0 && vehicle.Rotation < 45 || vehicle.Rotation >= 315 && vehicle.Rotation <= 360) && vehicle.X + vehicle.Length / 2 < dynamicBlock.X - dynamicBlock.Length / 2 && vehicle.Y - vehicle.Width / 2 > dynamicBlock.Y + dynamicBlock.Width / 2)
-                isBeside = true;
-            // around 90 degree
-            else if ((vehicle.Rotation >= 45 && vehicle.Rotation < 135) && vehicle.Y + vehicle.Length / 2 < dynamicBlock.Y - dynamicBlock.Length / 2 && vehicle.X + vehicle.Width / 2 < dynamicBlock.X - dynamicBlock.Width / 2)
-                isBeside = true;
-            // around 180 degree
-            else if ((vehicle.Rotation >= 135 && vehicle.Rotation < 225) && vehicle.X - vehicle.Length / 2 > dynamicBlock.X + dynamicBlock.Length / 2 && vehicle.Y + vehicle.Width / 2 < dynamicBlock.Y - dynamicBlock.Width / 2)
-                isBeside = true;
-            // 270 degree
-            else if (vehicle.Y - vehicle.Length / 2 > dynamicBlock.Y + dynamicBlock.Length / 2 && vehicle.X - vehicle.Width / 2 > dynamicBlock.X + dynamicBlock.Width / 2)
-                isBeside = true;
-
-            return isBeside;
         }
 
         /// <summary>
