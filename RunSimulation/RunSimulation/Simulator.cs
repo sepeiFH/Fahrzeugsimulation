@@ -10,7 +10,7 @@ namespace RunSimulation
     {
         public Simulator()
         {
-            
+
         }
 
         public void RunSimulation()
@@ -28,7 +28,7 @@ namespace RunSimulation
                 Thread.Sleep(1000);
             }
 
-            Console.WriteLine("Fahrzeusimulation wurde gestartet");
+            Console.WriteLine("Fahrzeugsimulation wurde gestartet");
             Console.ReadLine();
         }
     }
