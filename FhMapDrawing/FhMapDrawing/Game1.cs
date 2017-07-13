@@ -159,7 +159,14 @@ namespace FhMapDrawing
                 }
                 if (tempItem != null)
                 {
-                    clientSimulator.ToggleBrokenItem(tempItem);
+                    try
+                    {
+                        clientSimulator.ToggleBrokenItem(tempItem);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
                 }
             }
 
